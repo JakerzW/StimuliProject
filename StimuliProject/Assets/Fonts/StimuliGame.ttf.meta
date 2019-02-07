@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: e7022e09c7cacd54eb2989e683fc1d44
+timeCreated: 1549551718
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Kissy Hugs
+  fontNames:
+  - Kissy Hugs
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 809af5065abe5564e81965f4a279bd45, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
