@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
+
+    public Canvas gameHUD;
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+    {
+        
 	}
 	
 	// Update is called once per frame
@@ -24,6 +28,7 @@ public class PlayerController : MonoBehaviour {
             {
                 Debug.Log(hit.collider.gameObject.tag);
                 Destroy(hit.collider.gameObject);
+                gameHUD.GetComponent<GameController>().IncrementScore();
             }      
 		}
 	}
