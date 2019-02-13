@@ -27,8 +27,8 @@ public class PlayerController : MonoBehaviour
             if (hit.collider != null)
             {
                 Debug.Log(hit.collider.gameObject.tag);
-                Destroy(hit.collider.gameObject);
-                gameHUD.GetComponent<GameController>().IncrementScore();
+                //Destroy(hit.collider.gameObject);
+				gameHUD.GetComponent<GameController>().TargetHit();
             }      
 		}
 	}

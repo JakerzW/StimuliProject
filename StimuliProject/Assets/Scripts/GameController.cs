@@ -10,12 +10,24 @@ public class GameController : MonoBehaviour
     
     float currentTime;
     int currentCount;
+	public float timer;
 
-    public int score;
+    int score;
     public Text scoreText;
     public Text countdownText;
+	public Text timerText;
+
+	public GameObject Target1;
+	public GameObject Target2;
+	public GameObject Target3;
 
     public int maxTargets;
+	bool targetsActive;
+	bool spawnStarted;
+	float maxSpawnTime;
+	float spawnTimer;
+	public int maxValX;
+	public int maxValY;
 
     void Awake()
     {
@@ -23,9 +35,18 @@ public class GameController : MonoBehaviour
         currentState = GameState.start;
         currentTime = 0.0f;
         currentCount = 3;
+		maxSpawnTime = 3.0f;
 
-        countdownText.enabled = true;
+		if (timer == 0)
+		{
+			timer = 60;
+		}
+        
+		countdownText.enabled = true;
         scoreText.enabled = false;
+		timerText.enabled = false;
+
+		targetsActive = false;
     }
 
     // Use this for initialization
@@ -37,11 +58,11 @@ public class GameController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+		currentTime += Time.deltaTime;
+
         if (currentState == GameState.start)
         {
-            currentTime += Time.deltaTime;
-
-            if (currentTime > 1 && currentTime < 2)
+			if (currentTime > 1 && currentTime < 2)
             {
                 currentCount = 2;
             }
@@ -57,13 +78,21 @@ public class GameController : MonoBehaviour
             {
                 countdownText.enabled = false;
                 scoreText.enabled = true;
-                currentState = GameState.spawn;
+				timerText.enabled = true;
+				currentState = GameState.spawn;
             }         
         }
 
         if (currentState == GameState.wait || currentState == GameState.spawn)
         {
-            updateTargets();
+			timer -= Time.deltaTime;
+            UpdateTargets();
+
+			if (timer <= 0)
+			{
+				timer = 0;
+				currentState = GameState.end;
+			}
         }
     }
 
@@ -91,16 +120,120 @@ public class GameController : MonoBehaviour
             {
                 scoreText.text = "Score: " + score;
             }
+			if (timerText == null)
+			{
+				Debug.Log ("Timer Text is null.");
+			}
+			else
+			{
+				timerText.text = "Time: " + GetTimer((int)timer);
+			}
         }        
     }
 
-    public void IncrementScore()
+	//Called when a target has been hit to reset targets
+	public void TargetHit()
+	{
+		currentState = GameState.spawn;
+		targetsActive = false;
+
+		score++;
+
+		//Fade out other targets
+		GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
+		for(int i = 0; i < targets.Length; i++)
+		{
+			Destroy(targets[i]);
+		}
+
+		//Set player reaction timer to 0 and record time
+
+		UpdateTargets();
+	}
+
+	//Update the current state of the targets
+    void UpdateTargets()
     {
-        score++;
+		//Chech if spawning is ready and has started
+		if (currentState == GameState.spawn && !spawnStarted)
+		{
+			//Set the spawn timer
+			spawnTimer = Random.Range(0.0f, maxSpawnTime);
+			spawnStarted = true;
+		}
+		//If spawning has started then decrease timer until 0 and then spawn targets
+		if (currentState == GameState.spawn && spawnStarted)
+		{
+			spawnTimer -= Time.deltaTime;
+
+			if (spawnTimer <= 0)
+			{
+				CreateTargets();
+				spawnStarted = false;
+			}
+		}
     }
 
-    void updateTargets()
-    {
+	//Create targets and assign relative variables
+	void CreateTargets()
+	{
+		targetsActive = true;
+		currentState = GameState.wait;
 
-    }
+		int numOfTargets = Random.Range(1, maxTargets);
+
+		for (int i = 0; i < numOfTargets; i++)
+		{
+			int targetChoice = Random.Range(1, 3);
+			switch (targetChoice)
+			{
+				case 1:
+				{
+					Instantiate(Target1, new Vector3(Random.Range(-maxValX, maxValX), Random.Range(-maxValY, maxValY), 0), Quaternion.identity);
+					break;
+				}
+				case 2:	
+				{
+					Instantiate(Target2, new Vector3(Random.Range(-maxValX, maxValX), Random.Range(-maxValY, maxValY), 0), Quaternion.identity);
+					break;
+				}
+				case 3:	
+				{
+					Instantiate(Target3, new Vector3(Random.Range(-maxValX, maxValX), Random.Range(-maxValY, maxValY), 0), Quaternion.identity);
+					break;
+				}
+			}
+		}
+	}
+
+	string GetTimer(int s)
+	{
+		int mins;
+		int secs;
+		string minsStr;
+		string secsStr;
+
+		mins = s / 60;
+		secs = s % 60;
+
+		if (mins > 0)
+		{
+			minsStr = mins.ToString();
+		}
+		else
+		{
+			minsStr = "0";
+		}
+		if (secs < 10)
+		{
+			secsStr = "0" + secs.ToString();
+		}
+		else
+		{
+			secsStr = secs.ToString();
+		}
+
+		return minsStr + ":" + secsStr;
+
+	}
 }
