@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetController : MonoBehaviour {
-
-	bool fadeOut = false;
-	public float fadeSpeed = 1.0f;
+public class TargetController : MonoBehaviour
+{
+    
 	public float fadeTime = 1.0f;
 	public SpriteRenderer targetRenderer;
 
@@ -18,16 +17,7 @@ public class TargetController : MonoBehaviour {
 	// Update is called once per frame
 	void Update() 
 	{
-		if (fadeOut) 
-		{
-			float fade = Mathf.SmoothDamp(1.0f, 0.0f, ref fadeSpeed, fadeTime);
-			targetRenderer.color = new Color (1.0f, 1.0f, 1.0f, fade);
-
-			if (fade == 0.0f) 
-			{
-				Destroy(this.gameObject);				
-			}
-		}
+		
 	}
 
 	public void Hit(bool hit)
@@ -35,11 +25,26 @@ public class TargetController : MonoBehaviour {
 		if (hit) 
 		{
 			Destroy (this.gameObject);			
-		} 
-		else 
-		{
-			//Fade out and then destroy
-			fadeOut = true;
 		}
+        else if (!hit)
+		{
+            //Fade out and then destroy
+            StartCoroutine(FadeOut());
+        }
 	}
+
+    public IEnumerator FadeOut()
+    {
+        float start = Time.time;
+        Debug.Log("Fading...");
+        while (Time.time <= start + fadeTime)
+        {
+            Color newColor = targetRenderer.color;
+            newColor.a = 1f - Mathf.Clamp01((Time.time - start) / fadeTime);
+            //Debug.Log("Fade: " + newColor.a);
+            targetRenderer.color = newColor;
+            yield return new WaitForEndOfFrame();
+        }
+        Destroy(this.gameObject);
+    }
 }

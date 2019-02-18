@@ -21,8 +21,8 @@ public class GameController : MonoBehaviour
 	public GameObject Target2;
 	public GameObject Target3;
 
+    bool targetsActive;
     public int maxTargets;
-	bool targetsActive;
 	bool spawnStarted;
 	float maxSpawnTime;
 	float spawnTimer;
@@ -31,6 +31,8 @@ public class GameController : MonoBehaviour
 
     void Awake()
     {
+        Screen.orientation = ScreenOrientation.Landscape;
+
         score = 0;
         currentState = GameState.start;
         currentTime = 0.0f;
@@ -139,13 +141,16 @@ public class GameController : MonoBehaviour
 
 		score++;
 
-		hitTarget.GetComponent<TargetController>().Hit(true);
+        Debug.Log("Score: " + score);
+
+        hitTarget.GetComponent<TargetController>().Hit(true);
 
 		//Fade out other targets
 		GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
 		for(int i = 0; i < targets.Length; i++)
 		{
-			targets [i].GetComponent<TargetController> ().Hit (false);
+            targets[i].GetComponent<CircleCollider2D>().enabled = false;
+			targets[i].GetComponent<TargetController>().Hit(false);
 		}
 
 		//Set player reaction timer to 0 and record time
