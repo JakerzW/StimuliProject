@@ -5,33 +5,49 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    //Screen size defined
+    int screenWidth, screenHeight;
+
+    //Game states defined
     enum GameState {start, wait, spawn, end};
     GameState currentState;
     
+    //Game timer variables defined
     float currentTime;
     int currentCount;
 	public float timer;
 
+    //Score variables defined
     int score;
-    public Text scoreText;
-    public Text countdownText;
-	public Text timerText;
+    public Text scoreText, countdownText, timerText;
 
-	public GameObject Target1;
-	public GameObject Target2;
-	public GameObject Target3;
+    //Referencing the target objects
+	public GameObject Target1, Target2, Target3;
 
+    //Target spawning variables defined
     bool targetsActive;
     public int maxTargets;
 	bool spawnStarted;
 	float maxSpawnTime;
 	float spawnTimer;
-	public int maxValX;
-	public int maxValY;
+	public int maxValX, maxValY;
+    int singleSpawns, doubleSpawns, tripleSpawns;
+
+    //Target spawn location struct
+    struct Locations
+    {
+        public bool used;
+        public float xPos, yPos;
+    };
+
+    Locations[] allLocations;
 
     void Awake()
     {
         Screen.orientation = ScreenOrientation.Landscape;
+
+        screenWidth = Screen.width;
+        screenHeight = Screen.height;
 
         score = 0;
         currentState = GameState.start;
@@ -39,12 +55,64 @@ public class GameController : MonoBehaviour
         currentCount = 3;
 		maxSpawnTime = 3.0f;
 
+        singleSpawns = 8;
+        doubleSpawns = 6;
+        tripleSpawns = 4;
+
+        allLocations = new Locations[18];
+
+        for (int i = 0; i < allLocations.Length; i++)
+        {
+            allLocations[i].used = false;
+
+            //Assign x positions
+            if (i == 0 || i == 6 || i == 12)
+            {
+                allLocations[i].xPos = -50;
+            }
+            else if (i == 1 || i == 7 || i == 13)
+            {
+                allLocations[i].xPos = -30;
+            }
+            else if (i == 2 || i == 8 || i == 14)
+            {
+                allLocations[i].xPos = -10;
+            }
+            else if (i == 3 || i == 9 || i == 15)
+            {
+                allLocations[i].xPos = 10;
+            }
+            else if (i == 4 || i == 10 || i == 16)
+            {
+                allLocations[i].xPos = 30;
+            }
+            else if (i == 5 || i == 11 || i == 17)
+            {
+                allLocations[i].xPos = 50;
+            }
+
+            //Assign y positions
+            if (i < 6)
+            {
+                allLocations[i].yPos = 14;
+            }
+            else if (i < 12 && i >= 6)
+            {
+                allLocations[i].yPos = 0;
+            }
+            else if (i >= 12)
+            {
+                allLocations[i].yPos = -14;
+            }
+        }
+
 		if (timer == 0)
 		{
 			timer = 60;
 		}
         
 		countdownText.enabled = true;
+        countdownText.fontSize = 200;
         scoreText.enabled = false;
 		timerText.enabled = false;
 
@@ -55,7 +123,7 @@ public class GameController : MonoBehaviour
     void Start ()
     {
         countdownText.text = currentCount.ToString();
-	}
+    }
 	
 	// Update is called once per frame
 	void Update ()
@@ -95,6 +163,20 @@ public class GameController : MonoBehaviour
 				timer = 0;
 				currentState = GameState.end;
 			}
+
+            if (score == 18)
+            {
+                currentState = GameState.end;
+            }
+        }
+
+        if (currentState == GameState.end)
+        {
+            countdownText.enabled = true;
+            countdownText.fontSize = 100;
+            countdownText.text = "Game Over";
+            scoreText.enabled = false;
+            timerText.enabled = false;
         }
     }
 
@@ -165,7 +247,7 @@ public class GameController : MonoBehaviour
 		if (currentState == GameState.spawn && !spawnStarted)
 		{
 			//Set the spawn timer
-			spawnTimer = Random.Range(0.0f, maxSpawnTime);
+			spawnTimer = Random.Range(1.0f, maxSpawnTime);
 			spawnStarted = true;
 		}
 		//If spawning has started then decrease timer until 0 and then spawn targets
@@ -187,7 +269,23 @@ public class GameController : MonoBehaviour
 		targetsActive = true;
 		currentState = GameState.wait;
 
-		int numOfTargets = Random.Range(1, maxTargets);
+        bool locationFound = false;
+        
+
+        while (!locationFound && score < 18)
+        {
+            int newTarget = Random.Range(0, 18);
+            if (!allLocations[newTarget].used)
+            {
+                allLocations[newTarget].used = true;
+                locationFound = true;
+                Instantiate(Target1, new Vector3(allLocations[newTarget].xPos, allLocations[newTarget].yPos, 0), Quaternion.identity);
+            }
+        }
+
+        
+
+		/*int numOfTargets = Random.Range(1, maxTargets);
 
 		for (int i = 0; i < numOfTargets; i++)
 		{
@@ -210,7 +308,7 @@ public class GameController : MonoBehaviour
 					break;
 				}
 			}
-		}
+		}*/
 	}
 
 	string GetTimer(int s)
