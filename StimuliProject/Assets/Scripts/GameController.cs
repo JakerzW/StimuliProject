@@ -132,18 +132,20 @@ public class GameController : MonoBehaviour
     }
 
 	//Called when a target has been hit to reset targets
-	public void TargetHit()
+	public void TargetHit(GameObject hitTarget)
 	{
 		currentState = GameState.spawn;
 		targetsActive = false;
 
 		score++;
 
+		hitTarget.GetComponent<TargetController>().Hit(true);
+
 		//Fade out other targets
 		GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
 		for(int i = 0; i < targets.Length; i++)
 		{
-			Destroy(targets[i]);
+			targets [i].GetComponent<TargetController> ().Hit (false);
 		}
 
 		//Set player reaction timer to 0 and record time
