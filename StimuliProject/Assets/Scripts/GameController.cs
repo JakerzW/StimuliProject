@@ -51,17 +51,6 @@ public class GameController : MonoBehaviour
         screenWidth = Screen.width;
         screenHeight = Screen.height;
 
-        score = 0;
-        currentState = GameState.start;
-        currentTime = 0.0f;
-        currentCount = 3;
-		maxSpawnTime = 3.0f;
-
-        maxTargets = 36;
-        singleSpawns = 18;
-        doubleSpawns = 9;
-        tripleSpawns = 6;
-
         allLocations = new Locations[18];
         doubleLocations = new Locations[18];
         tripleLocations = new Locations[18];
@@ -114,17 +103,7 @@ public class GameController : MonoBehaviour
         doubleLocations = allLocations;
         tripleLocations = allLocations;
 
-		if (timer == 0)
-		{
-			timer = 60;
-		}
-        
-		countdownText.enabled = true;
-        countdownText.fontSize = 200;
-        scoreText.enabled = false;
-		timerText.enabled = false;
-
-		targetsActive = false;
+        ResetGame();
     }
 
     // Use this for initialization
@@ -172,7 +151,7 @@ public class GameController : MonoBehaviour
 				currentState = GameState.end;
 			}
 
-            if (maxTargets == 0)
+            if (maxTargets <= 0)
             {
                 currentState = GameState.end;
             }
@@ -180,11 +159,22 @@ public class GameController : MonoBehaviour
 
         if (currentState == GameState.end)
         {
+            GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
+            for (int i = 0; i < targets.Length; i++)
+            {
+                Destroy(targets[i]);
+            }
+
             countdownText.enabled = true;
             countdownText.fontSize = 100;
             countdownText.text = "Game Over";
             scoreText.enabled = false;
             timerText.enabled = false;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                ResetGame();
+            }
         }
     }
 
@@ -312,17 +302,43 @@ public class GameController : MonoBehaviour
                     if (doubleSpawns > 0)
                     {
                         Debug.Log("Spawn Number: " + spawnType);
+
                         int targetsCreated = 2;
+                        ClearLocations(doubleLocations);
+
                         while (!locationFound || targetsCreated > 0)
                         {
                             int newTarget = new int();
                             newTarget = Random.Range(0, 18);
-                            Debug.Log("Spawn Location (M): " + newTarget);
+
                             if (!doubleLocations[newTarget].used)
                             {
                                 doubleLocations[newTarget].used = true;
+
+                                //Block the same side of screen to be used twice for double target locations
+                                /*if (doubleLocations[newTarget].xPos > 0)
+                                {
+                                    for (int i = 0; i < doubleLocations.Length; i++)
+                                    {
+                                        if (doubleLocations[i].xPos > 0)
+                                        {
+                                            doubleLocations[i].used = true;
+                                        }
+                                    }
+                                }
+                                else if (doubleLocations[newTarget].xPos < 0)
+                                {
+                                    for (int i = 0; i < doubleLocations.Length; i++)
+                                    {
+                                        if (doubleLocations[i].xPos < 0)
+                                        {
+                                            doubleLocations[i].used = true;
+                                        }
+                                    }
+                                }*/
+
                                 Instantiate(Target1, new Vector3(doubleLocations[newTarget].xPos, doubleLocations[newTarget].yPos, 0), Quaternion.identity);
-                                Debug.Log("Spawning...");                                
+                                //Debug.Log("Spawning...");                                
                                 maxTargets--;
                                 targetsCreated--;
                                 locationFound = true;                                    
@@ -337,17 +353,46 @@ public class GameController : MonoBehaviour
                     if (tripleSpawns > 0)
                     {
                         Debug.Log("Spawn Number: " + spawnType);
+
                         int targetsCreated = 3;
-                        while (!locationFound || targetsCreated > 0)
+                        ClearLocations(tripleLocations);
+
+                        while (targetsCreated > 0)
                         {
                             int newTarget = new int();
                             newTarget = Random.Range(0, 18);
-                            //Debug.Log("Spawn Location (M): " + newTarget);
+
                             if (!tripleLocations[newTarget].used)
-                            {
+                            {                                
                                 tripleLocations[newTarget].used = true;
+
+                                //If there is one target left to be spawned, block the last used to side to ensure there is at least one target on each side
+                                 /*if (targetsCreated == 2)
+                                 {
+                                     if (tripleLocations[newTarget].xPos > 0)
+                                     {
+                                         for (int i = 0; i < tripleLocations.Length; i++)
+                                         {
+                                             if (tripleLocations[i].xPos > 0)
+                                             {
+                                                 tripleLocations[i].used = true;
+                                             }
+                                         }
+                                     }
+                                     else if (tripleLocations[newTarget].xPos < 0)
+                                     {
+                                         for (int i = 0; i < tripleLocations.Length; i++)
+                                         {
+                                             if (tripleLocations[i].xPos < 0)
+                                             {
+                                                 tripleLocations[i].used = true;
+                                             }
+                                         }
+                                     }
+                                 }*/                              
+
                                 Instantiate(Target1, new Vector3(tripleLocations[newTarget].xPos, tripleLocations[newTarget].yPos, 0), Quaternion.identity);
-                                Debug.Log("Spawning...");
+                                //Debug.Log("Spawning...");
                                 maxTargets--;
                                 targetsCreated--;
                                 locationFound = true; 
@@ -360,6 +405,14 @@ public class GameController : MonoBehaviour
                 }
             }
         }      
+    }
+
+    void ClearLocations(Locations[] loc)
+    {
+        for (int i = 0; i < loc.Length; i++)
+        {
+            loc[i].used = false;
+        }
     }
 
 	string GetTimer(int s)
@@ -392,4 +445,32 @@ public class GameController : MonoBehaviour
 		return minsStr + ":" + secsStr;
 
 	}
+
+    void ResetGame()
+    {
+        score = 0;
+        currentState = GameState.start;
+        currentTime = 0.0f;
+        currentCount = 3;
+        maxSpawnTime = 3.0f;
+
+        maxTargets = 36;
+        singleSpawns = 18;
+        doubleSpawns = 9;
+        tripleSpawns = 6;
+
+        ClearLocations(allLocations);
+
+        if (timer == 0)
+        {
+            timer = 60;
+        }
+
+        countdownText.enabled = true;
+        countdownText.fontSize = 200;
+        scoreText.enabled = false;
+        timerText.enabled = false;
+
+        targetsActive = false;
+    }
 }

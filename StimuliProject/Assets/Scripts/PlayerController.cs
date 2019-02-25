@@ -23,11 +23,9 @@ public class PlayerController : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, 100);
 
-            //Debug.Log("Hit Target");
             if (hit.collider != null)
             {
-                Debug.Log(hit.collider.gameObject.tag);
-                //Destroy(hit.collider.gameObject);
+                Debug.Log("Hit: " + hit.collider.gameObject.tag);
 				gameHUD.GetComponent<GameController>().TargetHit(hit.collider.gameObject);
             }      
 		}
