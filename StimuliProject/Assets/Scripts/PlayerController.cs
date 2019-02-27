@@ -18,14 +18,14 @@ public class PlayerController : MonoBehaviour
 	{
 		if (Input.GetMouseButtonDown(0)) 
 		{
-            Debug.Log ("Mouse button clicked");
+            //Debug.Log ("Mouse button clicked");
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, 100);
 
             if (hit.collider != null)
             {
-                Debug.Log("Hit: " + hit.collider.gameObject.tag);
+                //Debug.Log("Hit: " + hit.collider.gameObject.tag);
 				gameHUD.GetComponent<GameController>().TargetHit(hit.collider.gameObject);
             }      
 		}

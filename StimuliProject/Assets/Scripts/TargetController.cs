@@ -36,7 +36,7 @@ public class TargetController : MonoBehaviour
     public IEnumerator FadeOut()
     {
         float start = Time.time;
-        Debug.Log("Fading...");
+        //Debug.Log("Fading...");
         while (Time.time <= start + fadeTime)
         {
             Color newColor = targetRenderer.color;

@@ -40,9 +40,9 @@ public class GameController : MonoBehaviour
         public float xPos, yPos;
     };
 
-    Locations[] allLocations;
-    Locations[] doubleLocations;
-    Locations[] tripleLocations;
+    Locations[] allLocations = new Locations[18];
+    Locations[,] doubleLocations = new Locations[2, 9];
+    Locations[,] tripleLocations = new Locations[2, 9];
 
     void Awake()
     {
@@ -51,57 +51,9 @@ public class GameController : MonoBehaviour
         screenWidth = Screen.width;
         screenHeight = Screen.height;
 
-        allLocations = new Locations[18];
-        doubleLocations = new Locations[18];
-        tripleLocations = new Locations[18];
-
-        for (int i = 0; i < allLocations.Length; i++)
-        {
-            allLocations[i].used = false;
-
-            //Assign x positions
-            if (i == 0 || i == 6 || i == 12)
-            {
-                allLocations[i].xPos = -50;
-            }
-            else if (i == 1 || i == 7 || i == 13)
-            {
-                allLocations[i].xPos = -30;
-            }
-            else if (i == 2 || i == 8 || i == 14)
-            {
-                allLocations[i].xPos = -10;
-            }
-            else if (i == 3 || i == 9 || i == 15)
-            {
-                allLocations[i].xPos = 10;
-            }
-            else if (i == 4 || i == 10 || i == 16)
-            {
-                allLocations[i].xPos = 30;
-            }
-            else if (i == 5 || i == 11 || i == 17)
-            {
-                allLocations[i].xPos = 50;
-            }
-
-            //Assign y positions
-            if (i < 6)
-            {
-                allLocations[i].yPos = 14;
-            }
-            else if (i < 12 && i >= 6)
-            {
-                allLocations[i].yPos = 0;
-            }
-            else if (i >= 12)
-            {
-                allLocations[i].yPos = -14;
-            }
-        }
-
-        doubleLocations = allLocations;
-        tripleLocations = allLocations;
+        InitLocations(allLocations);
+        InitLocations(doubleLocations);
+        InitLocations(tripleLocations);
 
         ResetGame();
     }
@@ -221,7 +173,7 @@ public class GameController : MonoBehaviour
 
 		score++;
 
-        Debug.Log("Score: " + score);
+        //Debug.Log("Score: " + score);
 
         hitTarget.GetComponent<TargetController>().Hit(true);
 
@@ -266,145 +218,239 @@ public class GameController : MonoBehaviour
     {
         targetsActive = true;
         currentState = GameState.wait;
+        bool locationValid = false;
+        bool replacementFound = false;
+        int newTarget, newTargetSide, newTargetPos;
 
-        bool locationFound = false;        
-
-        while (!locationFound && maxTargets > 0)
+        //Debug.Log("Entering Spawn Procedure");
+        switch (Random.Range(1, 4))
         {
-            int spawnType = Random.Range(1, 4);
-            switch (spawnType)
+            case 1:
             {
-                case 1:
+                Debug.Log("Entering Single Spawn Procedure");
+                if (singleSpawns > 0)
                 {
-                    if (singleSpawns > 0)
+                    while (!locationValid)
                     {
-                        Debug.Log("Spawn Number: " + spawnType);
-                        while (!locationFound)
+                        newTarget = Random.Range(0, 18);
+                        if (!allLocations[newTarget].used)
                         {
-                            int newTarget = new int();
-                            newTarget = Random.Range(0, 18);
-                            Debug.Log("Spawn Location (S): " + newTarget);
-                            if (!allLocations[newTarget].used)
-                            {
-                                allLocations[newTarget].used = true;
-                                Instantiate(Target1, new Vector3(allLocations[newTarget].xPos, allLocations[newTarget].yPos, 0), Quaternion.identity);
-                                Debug.Log("Spawning...");
-                                maxTargets--;
-                                locationFound = true;
-                            }
+                            Instantiate(Target1, new Vector3(allLocations[newTarget].xPos, allLocations[newTarget].yPos, 0), Quaternion.identity);
+                            allLocations[newTarget].used = true;
+                            locationValid = true;
+                            maxTargets--;
+                            continue;
                         }
-                        singleSpawns--;
-                    }
-                    break;
-                }
-                case 2:
-                {
-                    if (doubleSpawns > 0)
-                    {
-                        Debug.Log("Spawn Number: " + spawnType);
-
-                        int targetsCreated = 2;
-                        ClearLocations(doubleLocations);
-
-                        while (!locationFound || targetsCreated > 0)
+                        else
                         {
-                            int newTarget = new int();
-                            newTarget = Random.Range(0, 18);
-
-                            if (!doubleLocations[newTarget].used)
+                            replacementFound = false;
+                            for (int i = 0; i < allLocations.Length; i++)
                             {
-                                doubleLocations[newTarget].used = true;
-
-                                //Block the same side of screen to be used twice for double target locations
-                                /*if (doubleLocations[newTarget].xPos > 0)
+                                if (!allLocations[i].used)
                                 {
-                                    for (int i = 0; i < doubleLocations.Length; i++)
-                                    {
-                                        if (doubleLocations[i].xPos > 0)
-                                        {
-                                            doubleLocations[i].used = true;
-                                        }
-                                    }
+                                    Instantiate(Target1, new Vector3(allLocations[newTarget].xPos, allLocations[newTarget].yPos, 0), Quaternion.identity);
+                                    allLocations[newTarget].used = true;
+                                    locationValid = true;
+                                    maxTargets--;
+                                    replacementFound = true;
+                                    Debug.Log("Replacement Found");
+                                    break;
                                 }
-                                else if (doubleLocations[newTarget].xPos < 0)
-                                {
-                                    for (int i = 0; i < doubleLocations.Length; i++)
-                                    {
-                                        if (doubleLocations[i].xPos < 0)
-                                        {
-                                            doubleLocations[i].used = true;
-                                        }
-                                    }
-                                }*/
-
-                                Instantiate(Target1, new Vector3(doubleLocations[newTarget].xPos, doubleLocations[newTarget].yPos, 0), Quaternion.identity);
-                                //Debug.Log("Spawning...");                                
-                                maxTargets--;
-                                targetsCreated--;
-                                locationFound = true;                                    
+                            }
+                            if (!replacementFound)
+                            {
+                                Debug.Log("Location for Single Spawn could not be found");
+                                Debug.Break();
                             }
                         }
-                        doubleSpawns--;
                     }
-                    break;
                 }
-                case 3:
-                {
-                    if (tripleSpawns > 0)
-                    {
-                        Debug.Log("Spawn Number: " + spawnType);
-
-                        int targetsCreated = 3;
-                        ClearLocations(tripleLocations);
-
-                        while (targetsCreated > 0)
-                        {
-                            int newTarget = new int();
-                            newTarget = Random.Range(0, 18);
-
-                            if (!tripleLocations[newTarget].used)
-                            {                                
-                                tripleLocations[newTarget].used = true;
-
-                                //If there is one target left to be spawned, block the last used to side to ensure there is at least one target on each side
-                                 /*if (targetsCreated == 2)
-                                 {
-                                     if (tripleLocations[newTarget].xPos > 0)
-                                     {
-                                         for (int i = 0; i < tripleLocations.Length; i++)
-                                         {
-                                             if (tripleLocations[i].xPos > 0)
-                                             {
-                                                 tripleLocations[i].used = true;
-                                             }
-                                         }
-                                     }
-                                     else if (tripleLocations[newTarget].xPos < 0)
-                                     {
-                                         for (int i = 0; i < tripleLocations.Length; i++)
-                                         {
-                                             if (tripleLocations[i].xPos < 0)
-                                             {
-                                                 tripleLocations[i].used = true;
-                                             }
-                                         }
-                                     }
-                                 }*/                              
-
-                                Instantiate(Target1, new Vector3(tripleLocations[newTarget].xPos, tripleLocations[newTarget].yPos, 0), Quaternion.identity);
-                                //Debug.Log("Spawning...");
-                                maxTargets--;
-                                targetsCreated--;
-                                locationFound = true; 
-                            }                           
-                        }
-                        tripleSpawns--;
-                    }
-                    
-                    break;
-                }
+                singleSpawns--;
+                break;
             }
-        }      
+            case 2:
+            {
+                Debug.Log("Entering Double Spawn Procedure");
+                if (doubleSpawns > 0)
+                {
+                    int targetsCreated = 0;
+                    while (!locationValid || targetsCreated < 2)
+                    {
+                        newTargetSide = Random.Range(0, 2);
+                        newTargetPos = Random.Range(0, 9);
+                        if (!doubleLocations[newTargetSide, newTargetPos].used)
+                        {
+                            Instantiate(Target1, new Vector3(doubleLocations[newTargetSide, newTargetPos].xPos, doubleLocations[newTargetSide, newTargetPos].yPos, 0), Quaternion.identity);
+                            doubleLocations[newTargetSide, newTargetPos].used = true;                            
+                            maxTargets--;
+                            locationValid = true;
+                            targetsCreated++;
+                        }
+                        else
+                        {
+                            replacementFound = false;
+                        }
+                    }
+                }
+                doubleSpawns--;
+                break;
+            }
+            case 3:
+            {
+                Debug.Log("Entering Triple Spawn Procedure");
+                if (tripleSpawns > 0)
+                {
+                    int targetsCreated = 0;
+                    while (!locationValid || targetsCreated < 3)
+                    {
+                        newTarget = Random.Range(0, 18);
+                       
+                    }
+                }
+                tripleSpawns--;
+                break;
+            }
+        }
+        
+
+
+
+
+        //bool locationFound = false;
+
+        //while (!locationFound && maxTargets > 0)
+        //{
+        //    int spawnType = Random.Range(1, 4);
+        //    switch (spawnType)
+        //    {
+        //        case 1:
+        //        {
+        //            if (singleSpawns > 0)
+        //            {
+        //                Debug.Log("Spawn Number: " + spawnType);
+        //                while (!locationFound)
+        //                {
+        //                    int newTarget = Random.Range(0, 18);
+        //                    //Debug.Log("Spawn Location (S): " + newTarget);                           
+        //                    if (!allLocations[newTarget].used)
+        //                    {
+        //                        allLocations[newTarget].used = true;
+        //                        Instantiate(Target1, new Vector3(allLocations[newTarget].xPos, allLocations[newTarget].yPos, 0), Quaternion.identity);
+        //                        //Debug.Log("Spawning...");
+        //                        maxTargets--;
+        //                        locationFound = true;
+        //                    }
+        //                }
+        //                singleSpawns--;
+        //            }
+        //            break;
+        //        }
+        //        case 2:
+        //        {
+        //            if (doubleSpawns > 0)
+        //            {
+        //                Debug.Log("Spawn Number: " + spawnType);
+
+        //                int targetsCreated = 2;
+        //                ClearLocations(doubleLocations);
+
+        //                while (!locationFound || targetsCreated > 0)
+        //                {
+        //                    int newTarget = Random.Range(0, 18);
+
+        //                    if (!doubleLocations[newTarget].used)
+        //                    {
+        //                        doubleLocations[newTarget].used = true;
+
+        //                        //Block the same side of screen to be used twice for double target locations
+        //                        if (doubleLocations[newTarget].xPos > 0)
+        //                        {
+        //                            for (int i = 0; i < doubleLocations.Length; i++)
+        //                            {
+        //                                if (doubleLocations[i].xPos > 0)
+        //                                {
+        //                                    doubleLocations[i].used = true;
+        //                                }
+        //                            }
+        //                        }
+        //                        else if (doubleLocations[newTarget].xPos < 0)
+        //                        {
+        //                            for (int i = 0; i < doubleLocations.Length; i++)
+        //                            {
+        //                                if (doubleLocations[i].xPos < 0)
+        //                                {
+        //                                    doubleLocations[i].used = true;
+        //                                }
+        //                            }
+        //                        }
+
+        //                        Instantiate(Target1, new Vector3(doubleLocations[newTarget].xPos, doubleLocations[newTarget].yPos, 0), Quaternion.identity);
+        //                        //Debug.Log("Spawning...");                                
+        //                        maxTargets--;
+        //                        targetsCreated--;
+        //                        locationFound = true;                                    
+        //                    }
+        //                }
+        //                doubleSpawns--;
+        //            }
+        //            break;
+        //        }
+        //        case 3:
+        //        {
+        //            if (tripleSpawns > 0)
+        //            {
+        //                Debug.Log("Spawn Number: " + spawnType);
+
+        //                int targetsCreated = 3;
+        //                ClearLocations(tripleLocations);
+
+        //                while (targetsCreated > 0)
+        //                {
+        //                    int newTarget = Random.Range(0, 18);
+
+        //                    if (!tripleLocations[newTarget].used)
+        //                    {                                
+        //                        tripleLocations[newTarget].used = true;
+
+        //                        //If there is one target left to be spawned, block the last used to side to ensure there is at least one target on each side
+        //                         /*if (targetsCreated == 2)
+        //                         {
+        //                             if (tripleLocations[newTarget].xPos > 0)
+        //                             {
+        //                                 for (int i = 0; i < tripleLocations.Length; i++)
+        //                                 {
+        //                                     if (tripleLocations[i].xPos > 0)
+        //                                     {
+        //                                         tripleLocations[i].used = true;
+        //                                     }
+        //                                 }
+        //                             }
+        //                             else if (tripleLocations[newTarget].xPos < 0)
+        //                             {
+        //                                 for (int i = 0; i < tripleLocations.Length; i++)
+        //                                 {
+        //                                     if (tripleLocations[i].xPos < 0)
+        //                                     {
+        //                                         tripleLocations[i].used = true;
+        //                                     }
+        //                                 }
+        //                             }
+        //                         }*/                              
+
+        //                        Instantiate(Target1, new Vector3(tripleLocations[newTarget].xPos, tripleLocations[newTarget].yPos, 0), Quaternion.identity);
+        //                        //Debug.Log("Spawning...");
+        //                        maxTargets--;
+        //                        targetsCreated--;
+        //                        locationFound = true; 
+        //                    }                           
+        //                }
+        //                tripleSpawns--;
+        //            }
+                    
+        //            break;
+        //        }
+        //    }
+        //}      
     }
 
     void ClearLocations(Locations[] loc)
@@ -412,6 +458,18 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < loc.Length; i++)
         {
             loc[i].used = false;
+        }
+    }
+
+    void ClearLocations(Locations[,] loc)
+    {
+        for (int i = 0; i < loc.GetLength(0); i++)
+        {
+            loc[0, i].used = false;
+        }
+        for (int i = 0; i < loc.GetLength(1); i++)
+        {
+            loc[1, i].used = false;
         }
     }
 
@@ -472,5 +530,120 @@ public class GameController : MonoBehaviour
         timerText.enabled = false;
 
         targetsActive = false;
+    }
+
+    void InitLocations(Locations[] loc)
+    {
+        ClearLocations(loc);
+
+        for (int i = 0; i < loc.Length; i++)
+        {
+            loc[i].used = false;
+
+            //Assign x positions
+            if (i == 0 || i == 6 || i == 12)
+            {
+                loc[i].xPos = -40;
+            }
+            else if (i == 1 || i == 7 || i == 13)
+            {
+                loc[i].xPos = -25;
+            }
+            else if (i == 2 || i == 8 || i == 14)
+            {
+                loc[i].xPos = -10;
+            }
+            else if (i == 3 || i == 9 || i == 15)
+            {
+                loc[i].xPos = 10;
+            }
+            else if (i == 4 || i == 10 || i == 16)
+            {
+                loc[i].xPos = 25;
+            }
+            else if (i == 5 || i == 11 || i == 17)
+            {
+                loc[i].xPos = 40;
+            }
+
+            //Assign y positions
+            if (i < 6)
+            {
+                loc[i].yPos = 14;
+            }
+            else if (i < 12 && i >= 6)
+            {
+                loc[i].yPos = 0;
+            }
+            else if (i >= 12)
+            {
+                loc[i].yPos = -14;
+            }
+        }
+    }
+
+    void InitLocations(Locations[,] loc)
+    {
+        ClearLocations(loc);
+
+        //Assign left side positions
+        for (int i = 0; i < loc.GetLength(0); i++)
+        {
+            if (i == 0 || i == 3 || i == 6)
+            {
+                loc[0, i].xPos = -40;
+            }
+            else if (i == 1 || i == 4 || i == 7)
+            {
+                loc[0, i].xPos = -25;
+            }
+            else if (i == 2 || i == 5 || i == 8)
+            {
+                loc[0, i].xPos = -10;
+            }
+
+            if (i == 0 || i == 1 || i == 2)
+            {
+                loc[0, i].yPos = 14;
+            }
+            if (i == 3 || i == 4 || i == 5)
+            {
+                loc[0, i].yPos = 0;
+            }
+            if (i == 6 || i == 7 || i == 8)
+            {
+                loc[0, i].yPos = -14;
+            }
+        }
+
+        //Assign right side positions
+        for (int i = 0; i < loc.GetLength(1); i++)
+        {
+            if (i == 0 || i == 3 || i == 6)
+            {
+                loc[1, i].xPos = 10;
+            }
+            if (i == 1 || i == 4 || i == 7)
+            {
+                loc[1, i].xPos = 25;
+            }
+            if (i == 2 || i == 5 || i == 8)
+            {
+                loc[1, i].xPos = 40;
+            }
+
+            if (i == 0 || i == 1 || i == 2)
+            {
+                loc[1, i].yPos = 14;
+            }
+            if (i == 3 || i == 4 || i == 5)
+            {
+                loc[1, i].yPos = 0;
+            }
+            if (i == 6 || i == 7 || i == 8)
+            {
+                loc[1, i].yPos = -14;
+            }
+        }
     }
 }
