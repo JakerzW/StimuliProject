@@ -7,6 +7,7 @@ public class TargetController : MonoBehaviour
     
 	public float fadeTime = 1.0f;
 	public SpriteRenderer targetRenderer;
+    public int position;
 
 	// Use this for initialization
 	void Start() 
@@ -46,5 +47,10 @@ public class TargetController : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         Destroy(this.gameObject);
+    }
+
+    void updatePosition(int newPos)
+    {
+        position = newPos;
     }
 }

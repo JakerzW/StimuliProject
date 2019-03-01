@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
             if (hit.collider != null)
             {
                 //Debug.Log("Hit: " + hit.collider.gameObject.tag);
-				gameHUD.GetComponent<GameController>().TargetHit(hit.collider.gameObject);
+				gameHUD.GetComponent<GameController>().TargetHit(hit.collider.gameObject, hit.collider.GetComponent<TargetController>().position);                
             }      
 		}
 	}
