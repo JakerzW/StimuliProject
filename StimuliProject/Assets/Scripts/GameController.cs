@@ -43,7 +43,7 @@ public class GameController : MonoBehaviour
     Locations[] singleLocations = new Locations[18];
     Locations[,] doubleLocations = new Locations[2, 9];
     Locations[,] tripleLocations = new Locations[2, 9];
-    //Locations[] singlesClicked = new Locations[18];
+    Locations[] tempLocations = new Locations[18];
     Locations[] doublesClicked = new Locations[18];
     Locations[] triplesClicked = new Locations[18];
 
@@ -57,7 +57,7 @@ public class GameController : MonoBehaviour
         InitLocations(singleLocations);
         InitLocations(doubleLocations);
         InitLocations(tripleLocations);
-        //InitLocations(singlesClicked);
+        InitLocations(tempLocations);
         InitLocations(doublesClicked);
         InitLocations(triplesClicked);
 
@@ -226,7 +226,7 @@ public class GameController : MonoBehaviour
         currentState = GameState.wait;
         bool locationValid = false;
         bool replacementFound = false;
-        int newTarget, newTargetSide, newTargetPos;
+        int newTargetPos;
 
         //Debug.Log("Entering Spawn Procedure");
         switch (Random.Range(1, 4))
@@ -238,11 +238,11 @@ public class GameController : MonoBehaviour
                 {
                     while (!locationValid)
                     {
-                        newTarget = Random.Range(0, 18);
-                        if (!singleLocations[newTarget].used)
+                        newTargetPos = Random.Range(0, 18);
+                        if (!singleLocations[newTargetPos].used)
                         {
-                            Instantiate(Target1, new Vector3(singleLocations[newTarget].xPos, singleLocations[newTarget].yPos, 0), Quaternion.identity);
-                            singleLocations[newTarget].used = true;
+                            Instantiate(Target1, new Vector3(singleLocations[newTargetPos].xPos, singleLocations[newTargetPos].yPos, 0), Quaternion.identity);
+                            singleLocations[newTargetPos].used = true;
                             locationValid = true;
                             maxTargets--;
                             continue;
@@ -254,8 +254,8 @@ public class GameController : MonoBehaviour
                             {
                                 if (!singleLocations[i].used)
                                 {
-                                    Instantiate(Target1, new Vector3(singleLocations[newTarget].xPos, singleLocations[newTarget].yPos, 0), Quaternion.identity);
-                                    singleLocations[newTarget].used = true;
+                                    Instantiate(Target1, new Vector3(singleLocations[newTargetPos].xPos, singleLocations[newTargetPos].yPos, 0), Quaternion.identity);
+                                    singleLocations[newTargetPos].used = true;
                                     locationValid = true;
                                     maxTargets--;
                                     replacementFound = true;
@@ -282,12 +282,18 @@ public class GameController : MonoBehaviour
                     int targetsCreated = 0;
                     while (!locationValid || targetsCreated < 2)
                     {
-                        newTargetSide = Random.Range(0, 2);
-                        newTargetPos = Random.Range(0, 9);
-                        if (!doublesClicked[newTargetSide, newTargetPos].used)
+                        ClearLocations(tempLocations);
+                        newTargetPos = Random.Range(0, 18);
+                        if (!doublesClicked[newTargetPos].used)
                         {
-                            Instantiate(Target1, new Vector3(doubleLocations[newTargetSide, newTargetPos].xPos, doubleLocations[newTargetSide, newTargetPos].yPos, 0), Quaternion.identity);
-                            doubleLocations[newTargetSide, newTargetPos].used = true;
+                            //Create the first new target
+                            Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
+                            
+                            //Assign the position of the new target within the doubleLocations array
+                            tempLocations[newTargetPos].used = true;
+                            doubleLocations = ConvertLocationArray(tempLocations);
+
+                            //Assign relevant variables
                             locationValid = true;                            
                             maxTargets--;
                             targetsCreated++;
@@ -305,20 +311,49 @@ public class GameController : MonoBehaviour
                     int targetsCreated = 0;
                     while (!locationValid || targetsCreated < 3)
                     {
-                        newTarget = Random.Range(0, 18);
+                        newTargetPos = Random.Range(0, 18);
                        
                     }
                 }
                 tripleSpawns--;
                 break;
             }
+        }        
+    }
+
+    Locations[,] ConvertLocationArray(Locations[] loc)
+    {
+        Locations[,] newLoc = new Locations[2, 9];
+
+        for (int i = 0; i < loc.Length; i++)
+        {
+            if (i >= 0 && i <= 2)
+            {
+                newLoc[0, i] = loc[i];
+            }
+            else if (i >= 3 && i <= 5)
+            {
+                newLoc[1, i - 3] = loc[i];
+            }
+            else if (i >= 6 && i <= 8)
+            {
+                newLoc[0, i - 3] = loc[i];
+            }
+            else if (i >= 9 && i <= 11)
+            {
+                newLoc[1, i - 6] = loc[i];
+            }
+            else if (i >= 12 && i <= 14)
+            {
+                newLoc[0, i - 6] = loc[i];
+            }
+            else if (i >= 15 && i <= 17)
+            {
+                newLoc[1, i - 9] = loc[i];
+            }
         }
-        
 
-
-
-
-        
+        return newLoc;
     }
 
     void ClearLocations(Locations[] loc)
