@@ -223,7 +223,7 @@ public class GameController : MonoBehaviour
     void CreateTargets()
     {
         targetsActive = true;
-        currentState = GameState.wait;
+        currentState = GameState.wait;    
         bool locationValid = false;
         bool replacementFound = false;
         int newTargetPos;
@@ -279,24 +279,55 @@ public class GameController : MonoBehaviour
                 Debug.Log("Entering Double Spawn Procedure");
                 if (doubleSpawns > 0)
                 {
-                    int targetsCreated = 0;
-                    while (!locationValid || targetsCreated < 2)
+                    while (!locationValid)
                     {
                         ClearLocations(tempLocations);
                         newTargetPos = Random.Range(0, 18);
+                        //WARNING: Will get stuck if all locations have been used
+                        //Fix: Could implement an attempts counter - after a set number of attempts, it will be forced to go through each 
+                        //     possible location, and if no location is found, a random one is given
                         if (!doublesClicked[newTargetPos].used)
                         {
                             //Create the first new target
                             Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
                             
-                            //Assign the position of the new target within the doubleLocations array
+                            //Assign the position of the new target within the doubleLocations array and block one side
                             tempLocations[newTargetPos].used = true;
-                            doubleLocations = ConvertLocationArray(tempLocations);
+                            doubleLocations = ConvertLocationArray(tempLocations, newTargetPos);
+                            int nextTargetSide = FindNextTargetSide(newTargetPos);
 
-                            //Assign relevant variables
-                            locationValid = true;                            
-                            maxTargets--;
-                            targetsCreated++;
+                            //Use the new array and open side value to find a position for the next target
+                            newTargetPos = Random.Range(0, 9);
+                            int secondTargetPos;
+                            if (!doubleLocations[nextTargetSide, newTargetPos].used)
+                            {
+                                //Create the second target and assign values
+                                secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
+                                Instantiate(Target1, new Vector3(doublesClicked[secondTargetPos].xPos, doublesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                                locationValid = true;
+                            }
+                            else
+                            {
+                                //Find a replacement location
+                                replacementFound = false;
+                                for (int i = 0; i < doubleLocations.GetLength(nextTargetSide); i++)
+                                {
+                                    if (!doubleLocations[nextTargetSide, i].used)
+                                    {
+                                        secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
+                                        Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
+                                        replacementFound = true;
+                                        locationValid = true;
+                                    }
+                                }
+                                if (!replacementFound)
+                                {
+                                    //Create a target randomly if a target placement is not found
+                                    secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
+                                    Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
+                                    locationValid = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -308,11 +339,82 @@ public class GameController : MonoBehaviour
                 Debug.Log("Entering Triple Spawn Procedure");
                 if (tripleSpawns > 0)
                 {
-                    int targetsCreated = 0;
-                    while (!locationValid || targetsCreated < 3)
-                    {
+                    while (!locationValid)
+                    {                       
+                        ClearLocations(tempLocations);
                         newTargetPos = Random.Range(0, 18);
-                       
+                        //WARNING: Will get stuck if all locations have been used
+                        //Fix: Could implement an attempts counter - after a set number of attempts, it will be forced to go through each 
+                        //     possible location, and if no location is found, a random one is given
+                        if (!triplesClicked[newTargetPos].used)
+                        {
+                            //Create the first new target
+                            Instantiate(Target1, new Vector3(triplesClicked[newTargetPos].xPos, triplesClicked[newTargetPos].yPos, 0), Quaternion.identity);
+
+                            //Assign the position of the new target within the doubleLocations array and block one side
+                            tempLocations[newTargetPos].used = true;
+                            tripleLocations = ConvertLocationArray(tempLocations, newTargetPos);
+                            int nextTargetSide = FindNextTargetSide(newTargetPos);
+
+                            //Use the new array and open side value to find a position for the next target
+                            newTargetPos = Random.Range(0, 9);
+                            int secondTargetPos;
+                            if (!tripleLocations[nextTargetSide, newTargetPos].used)
+                            {
+                                //Create the second target and assign values
+                                secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
+                                Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                            }
+                            else
+                            {
+                                //Find a replacement location
+                                replacementFound = false;
+                                for (int i = 0; i < tripleLocations.GetLength(nextTargetSide); i++)
+                                {
+                                    if (!tripleLocations[nextTargetSide, i].used)
+                                    {
+                                        secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
+                                        Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                                        replacementFound = true;
+                                    }
+                                }
+                                //If no replacement was found, spawn where the second target was randomly chosen
+                                if (!replacementFound)
+                                {
+                                    secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
+                                    Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                                }
+                            }
+
+                            //Create the third target in a random location
+                            int thirdTargetPos = Random.Range(0, 18);
+                            if (!triplesClicked[thirdTargetPos].used)
+                            {
+                                Instantiate(Target1, new Vector3(triplesClicked[thirdTargetPos].xPos, triplesClicked[thirdTargetPos].yPos, 0), Quaternion.identity);
+                                locationValid = true;
+                            }
+                            //If the random location is used, find a replacement location
+                            else
+                            {
+                                replacementFound = false;
+                                for (int i = 0; i < triplesClicked.Length; i++)
+                                {
+                                    if (!triplesClicked[i].used)
+                                    {
+                                        Instantiate(Target1, new Vector3(triplesClicked[i].xPos, triplesClicked[i].yPos, 0), Quaternion.identity);
+                                        locationValid = true;
+                                        replacementFound = true;
+                                    }
+                                }
+                                //If no replacement location is found, spawn in the randomly chosen position
+                                if (!replacementFound)
+                                {
+                                    Instantiate(Target1, new Vector3(triplesClicked[thirdTargetPos].xPos, triplesClicked[thirdTargetPos].yPos, 0), Quaternion.identity);
+                                    locationValid = true;
+                                    replacementFound = true;
+                                }
+                            }
+                        }
                     }
                 }
                 tripleSpawns--;
@@ -321,10 +423,64 @@ public class GameController : MonoBehaviour
         }        
     }
 
-    Locations[,] ConvertLocationArray(Locations[] loc)
+    int Convert2DLocation(int side, int pos)
+    {
+        if (side == 0)
+        {
+            switch (pos)
+            {
+                case 0:
+                case 1:
+                case 2:
+                {
+                    return pos;
+                }
+                case 3:
+                case 4:
+                case 5:
+                {
+                    return pos + 3;
+                }
+                case 6:
+                case 7:
+                case 8:
+                {
+                    return pos + 6;
+                }
+            }
+        }
+        if (side == 1)
+        {
+            switch (pos)
+            {
+                case 0:
+                case 1:
+                case 2:
+                {
+                    return pos + 3;
+                }
+                case 3:
+                case 4:
+                case 5:
+                {
+                    return pos + 6;
+                }
+                case 6:
+                case 7:
+                case 8:
+                {
+                    return pos + 9;
+                }
+            }
+        }
+        return -1;
+    }
+
+    Locations[,] ConvertLocationArray(Locations[] loc, int usedPos)
     {
         Locations[,] newLoc = new Locations[2, 9];
 
+        //Set up new array
         for (int i = 0; i < loc.Length; i++)
         {
             if (i >= 0 && i <= 2)
@@ -353,7 +509,52 @@ public class GameController : MonoBehaviour
             }
         }
 
+        //Assign used variable to the correct side
+        switch (usedPos)
+        {
+            case 0: case 1: case 2:
+            case 6: case 7: case 8:
+            case 12: case 13: case 14:
+            {
+                for (int i = 0; i < newLoc.GetLength(0); i++)
+                {
+                    newLoc[0, i].used = true;
+                }
+                break;
+            }
+            case 3: case 4: case 5:
+            case 9: case 10: case 11:
+            case 15: case 16: case 17:
+            {
+                for (int i = 0; i < newLoc.GetLength(1); i++)
+                {
+                    newLoc[1, i].used = true;
+                }
+                break;
+            }
+        }
+
         return newLoc;
+    }
+
+    int FindNextTargetSide(int refLoc)
+    {
+        switch (refLoc)
+        {
+            case 0: case 1: case 2:
+            case 6: case 7: case 8:
+            case 12: case 13: case 14:
+            {
+                return 1;
+            }
+            case 3: case 4: case 5:
+            case 9: case 10: case 11:
+            case 15: case 16: case 17:
+            {
+                return 0;
+            }
+        }
+        return -1;
     }
 
     void ClearLocations(Locations[] loc)
