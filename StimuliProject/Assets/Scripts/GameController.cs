@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
 
     //Score variables defined
     int score;
-    public Text scoreText, countdownText, timerText;
+    public Text scoreText, countdownText, timerText, finalScoreText, gameOverText;
 
     //Referencing the target objects
 	public GameObject Target1, Target2, Target3;
@@ -36,6 +36,7 @@ public class GameController : MonoBehaviour
     //Target spawn location struct
     struct Locations
     {
+        public GameObject thisTarget;
         public bool used;
         public float xPos, yPos;
     };
@@ -123,9 +124,10 @@ public class GameController : MonoBehaviour
                 Destroy(targets[i]);
             }
 
-            countdownText.enabled = true;
-            countdownText.fontSize = 100;
-            countdownText.text = "Game Over";
+            gameOverText.enabled = true;
+            gameOverText.text = "Game Over";
+            finalScoreText.enabled = true;
+            finalScoreText.text = "Your score: " + score;
             scoreText.enabled = false;
             timerText.enabled = false;
 
@@ -241,7 +243,7 @@ public class GameController : MonoBehaviour
                         newTargetPos = Random.Range(0, 18);
                         if (!singleLocations[newTargetPos].used)
                         {
-                            Instantiate(Target1, new Vector3(singleLocations[newTargetPos].xPos, singleLocations[newTargetPos].yPos, 0), Quaternion.identity);
+                            singleLocations[newTargetPos].thisTarget = Instantiate(Target1, new Vector3(singleLocations[newTargetPos].xPos, singleLocations[newTargetPos].yPos, 0), Quaternion.identity);
                             singleLocations[newTargetPos].used = true;
                             locationValid = true;
                             maxTargets--;
@@ -254,7 +256,7 @@ public class GameController : MonoBehaviour
                             {
                                 if (!singleLocations[i].used)
                                 {
-                                    Instantiate(Target1, new Vector3(singleLocations[newTargetPos].xPos, singleLocations[newTargetPos].yPos, 0), Quaternion.identity);
+                                    singleLocations[newTargetPos].thisTarget = Instantiate(Target1, new Vector3(singleLocations[newTargetPos].xPos, singleLocations[newTargetPos].yPos, 0), Quaternion.identity);
                                     singleLocations[newTargetPos].used = true;
                                     locationValid = true;
                                     maxTargets--;
@@ -303,7 +305,7 @@ public class GameController : MonoBehaviour
                             {
                                 //Create the second target and assign values
                                 secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
-                                Instantiate(Target1, new Vector3(doublesClicked[secondTargetPos].xPos, doublesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                                doublesClicked[secondTargetPos].thisTarget = Instantiate(Target1, new Vector3(doublesClicked[secondTargetPos].xPos, doublesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
                                 locationValid = true;
                             }
                             else
@@ -315,7 +317,7 @@ public class GameController : MonoBehaviour
                                     if (!doubleLocations[nextTargetSide, i].used)
                                     {
                                         secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
-                                        Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
+                                        doublesClicked[secondTargetPos].thisTarget = Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
                                         replacementFound = true;
                                         locationValid = true;
                                     }
@@ -324,7 +326,7 @@ public class GameController : MonoBehaviour
                                 {
                                     //Create a target randomly if a target placement is not found
                                     secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
-                                    Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
+                                    doublesClicked[secondTargetPos].thisTarget = Instantiate(Target1, new Vector3(doublesClicked[newTargetPos].xPos, doublesClicked[newTargetPos].yPos, 0), Quaternion.identity);
                                     locationValid = true;
                                 }
                             }
@@ -363,7 +365,7 @@ public class GameController : MonoBehaviour
                             {
                                 //Create the second target and assign values
                                 secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
-                                Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                                triplesClicked[secondTargetPos].thisTarget = Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
                             }
                             else
                             {
@@ -374,7 +376,7 @@ public class GameController : MonoBehaviour
                                     if (!tripleLocations[nextTargetSide, i].used)
                                     {
                                         secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
-                                        Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                                        triplesClicked[secondTargetPos].thisTarget = Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
                                         replacementFound = true;
                                     }
                                 }
@@ -382,7 +384,7 @@ public class GameController : MonoBehaviour
                                 if (!replacementFound)
                                 {
                                     secondTargetPos = Convert2DLocation(nextTargetSide, newTargetPos);
-                                    Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
+                                    triplesClicked[secondTargetPos].thisTarget = Instantiate(Target1, new Vector3(triplesClicked[secondTargetPos].xPos, triplesClicked[secondTargetPos].yPos, 0), Quaternion.identity);
                                 }
                             }
 
@@ -390,7 +392,7 @@ public class GameController : MonoBehaviour
                             int thirdTargetPos = Random.Range(0, 18);
                             if (!triplesClicked[thirdTargetPos].used)
                             {
-                                Instantiate(Target1, new Vector3(triplesClicked[thirdTargetPos].xPos, triplesClicked[thirdTargetPos].yPos, 0), Quaternion.identity);
+                                triplesClicked[thirdTargetPos].thisTarget = Instantiate(Target1, new Vector3(triplesClicked[thirdTargetPos].xPos, triplesClicked[thirdTargetPos].yPos, 0), Quaternion.identity);
                                 locationValid = true;
                             }
                             //If the random location is used, find a replacement location
@@ -401,7 +403,7 @@ public class GameController : MonoBehaviour
                                 {
                                     if (!triplesClicked[i].used)
                                     {
-                                        Instantiate(Target1, new Vector3(triplesClicked[i].xPos, triplesClicked[i].yPos, 0), Quaternion.identity);
+                                        triplesClicked[thirdTargetPos].thisTarget = Instantiate(Target1, new Vector3(triplesClicked[i].xPos, triplesClicked[i].yPos, 0), Quaternion.identity);
                                         locationValid = true;
                                         replacementFound = true;
                                     }
@@ -409,7 +411,7 @@ public class GameController : MonoBehaviour
                                 //If no replacement location is found, spawn in the randomly chosen position
                                 if (!replacementFound)
                                 {
-                                    Instantiate(Target1, new Vector3(triplesClicked[thirdTargetPos].xPos, triplesClicked[thirdTargetPos].yPos, 0), Quaternion.identity);
+                                    triplesClicked[thirdTargetPos].thisTarget = Instantiate(Target1, new Vector3(triplesClicked[thirdTargetPos].xPos, triplesClicked[thirdTargetPos].yPos, 0), Quaternion.identity);
                                     locationValid = true;
                                     replacementFound = true;
                                 }
@@ -629,9 +631,10 @@ public class GameController : MonoBehaviour
         }
 
         countdownText.enabled = true;
-        countdownText.fontSize = 200;
         scoreText.enabled = false;
         timerText.enabled = false;
+        finalScoreText.enabled = false;
+        gameOverText.enabled = false;
 
         targetsActive = false;
     }
