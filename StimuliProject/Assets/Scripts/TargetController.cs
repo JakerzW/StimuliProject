@@ -49,7 +49,7 @@ public class TargetController : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    void updatePosition(int newPos)
+    public void UpdatePosition(int newPos)
     {
         position = newPos;
     }
