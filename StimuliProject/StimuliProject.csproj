@@ -82,8 +82,13 @@
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\TargetController.cs" />
+    <Compile Include="Assets\Scripts\TitleScreenButtonController.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_characters.xml" />
+    <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_objects.xml" />
+    <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_tiles.xml" />
+    <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_vehicles.xml" />
     <None Include="Assets\Kenney\Shooting Gallery (110 assets)\Spritesheets\spritesheet_hud.xml" />
     <None Include="Assets\Kenney\Shooting Gallery (110 assets)\Spritesheets\spritesheet_objects.xml" />
     <None Include="Assets\Kenney\Shooting Gallery (110 assets)\Spritesheets\spritesheet_stall.xml" />

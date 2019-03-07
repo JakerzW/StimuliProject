@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Shooting Scene.unity
+- path: Assets/Scenes/Driving Scene.unity
   isLoaded: 1
   isActive: 1
