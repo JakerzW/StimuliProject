@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameController : MonoBehaviour
+public class ShootingGameController : MonoBehaviour
 {
     //Screen size defined
     int screenWidth, screenHeight;
@@ -190,30 +190,30 @@ public class GameController : MonoBehaviour
         {
             case SpawnType.sgl:
             {
-                singleLocations[hitTarget.GetComponent<TargetController>().position].used = true;
+                singleLocations[hitTarget.GetComponent<ShootingTargetController>().position].used = true;
                 break;
             }
             case SpawnType.dbl:
             {
-                doublesClicked[hitTarget.GetComponent<TargetController>().position].used = true;
+                doublesClicked[hitTarget.GetComponent<ShootingTargetController>().position].used = true;
                 break;
             }
             case SpawnType.tpl:
             {
-                triplesClicked[hitTarget.GetComponent<TargetController>().position].used = true;
+                triplesClicked[hitTarget.GetComponent<ShootingTargetController>().position].used = true;
                 break;
             }
         }
 
         //Call the hit function on the target that was hit
-        hitTarget.GetComponent<TargetController>().Hit(true);
+        hitTarget.GetComponent<ShootingTargetController>().Hit(true);
 
 		//Fade out other targets
 		GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
 		for(int i = 0; i < targets.Length; i++)
 		{
             targets[i].GetComponent<CircleCollider2D>().enabled = false;
-			targets[i].GetComponent<TargetController>().Hit(false);
+			targets[i].GetComponent<ShootingTargetController>().Hit(false);
 		}
 
 		//Set player reaction timer to 0 and record time
@@ -460,7 +460,7 @@ public class GameController : MonoBehaviour
     void InstantiateTarget(Locations[] array, int pos)
     {
         array[pos].thisTarget = Instantiate(Target1, new Vector3(triplesClicked[pos].xPos, triplesClicked[pos].yPos, 0), Quaternion.identity);
-        array[pos].thisTarget.GetComponent<TargetController>().UpdatePosition(pos);
+        array[pos].thisTarget.GetComponent<ShootingTargetController>().UpdatePosition(pos);
     }
 
     int Convert2DLocation(int side, int pos)

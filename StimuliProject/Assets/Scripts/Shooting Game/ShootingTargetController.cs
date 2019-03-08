@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetController : MonoBehaviour
+public class ShootingTargetController : MonoBehaviour
 {
     
 	public float fadeTime = 1.0f;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class ShootingPlayerController : MonoBehaviour
 {
 
     public Canvas gameHUD;
@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
             if (hit.collider != null)
             {
                 //Debug.Log("Hit: " + hit.collider.gameObject.tag);
-				gameHUD.GetComponent<GameController>().TargetHit(hit.collider.gameObject, hit.collider.GetComponent<TargetController>().position);                
+				gameHUD.GetComponent<ShootingGameController>().TargetHit(hit.collider.gameObject, hit.collider.GetComponent<ShootingTargetController>().position);                
             }      
 		}
 	}
