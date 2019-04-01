@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Driving Game\DrivingGameController.cs" />
+    <Compile Include="Assets\Scripts\Driving Game\TrackController.cs" />
     <Compile Include="Assets\Scripts\Shooting Game\ShootingGameController.cs" />
     <Compile Include="Assets\Scripts\Shooting Game\ShootingPlayerController.cs" />
     <Compile Include="Assets\Scripts\Shooting Game\ShootingTargetController.cs" />

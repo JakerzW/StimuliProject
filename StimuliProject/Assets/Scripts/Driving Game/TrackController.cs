@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DrivingGameController : MonoBehaviour {
+public class TrackController : MonoBehaviour
+{
+    public GameObject Background;
+    public GameObject TrackStartBlock;
+    public GameObject TrackStraight;
+    
 
 	// Use this for initialization
 	void Start ()
