@@ -34,6 +34,8 @@ public class ShootingGameController : MonoBehaviour
 	float spawnTimer;
 	public int maxValX, maxValY;
     public int singleSpawns, doubleSpawns, tripleSpawns;
+    int spawnNum;
+    int targetsHit;
 
     //Target spawn location struct
     struct Locations
@@ -49,6 +51,8 @@ public class ShootingGameController : MonoBehaviour
     Locations[] tempLocations = new Locations[18];
     Locations[] doublesClicked = new Locations[18];
     Locations[] triplesClicked = new Locations[18];
+
+    int[] spawnTimeSlots = new int[] {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3};
 
     void Awake()
     {
@@ -104,18 +108,16 @@ public class ShootingGameController : MonoBehaviour
         if (currentState == GameState.wait || currentState == GameState.spawn)
         {
 			timer -= Time.deltaTime;
-            UpdateTargets();
 
-			if (timer <= 0)
-			{
-				timer = 0;
-				currentState = GameState.end;
-			}
-
-            /*if (maxTargets <= 0)
+            if (timer <= 0 || targetsHit >= 30)
             {
+                timer = 0;
                 currentState = GameState.end;
-            }*/
+            }
+            else
+            {
+                UpdateTargets();
+            }
         }
 
         if (currentState == GameState.end)
@@ -184,6 +186,7 @@ public class ShootingGameController : MonoBehaviour
         //Increase the score
         //Will need to implement a new function for the new score algorithm
 		score++;
+        targetsHit++;
 
         //Adjust the array for the target that was hit
         switch (currentSpawn)
@@ -228,8 +231,9 @@ public class ShootingGameController : MonoBehaviour
 		//Chech if spawning is ready and has started
 		if (currentState == GameState.spawn && !spawnStarted)
 		{
-			//Set the spawn timer
-			spawnTimer = Random.Range(1.0f, maxSpawnTime);
+            //Set the spawn timer
+            spawnTimer = spawnTimeSlots[spawnNum];
+			//spawnTimer = Random.Range(1.0f, maxSpawnTime);
 			spawnStarted = true;
 		}
 		//If spawning has started then decrease timer until 0 and then spawn targets
@@ -240,6 +244,7 @@ public class ShootingGameController : MonoBehaviour
 			if (spawnTimer <= 0)
 			{
 				CreateTargets();
+                spawnNum++;
 				spawnStarted = false;
 			}
 		}
@@ -349,6 +354,7 @@ public class ShootingGameController : MonoBehaviour
                                             InstantiateTarget(doublesClicked, secondTargetPos);
                                             replacementFound = true;
                                             locationValid = true;
+                                            break;
                                         }
                                     }
                                     if (!replacementFound)
@@ -409,6 +415,7 @@ public class ShootingGameController : MonoBehaviour
                                             secondTargetPos = Convert2DLocation(nextTargetSide, i);
                                             InstantiateTarget(triplesClicked, secondTargetPos);
                                             replacementFound = true;
+                                            break;
                                         }
                                     }
                                     //If no replacement was found, spawn where the second target was randomly chosen
@@ -437,6 +444,7 @@ public class ShootingGameController : MonoBehaviour
                                             InstantiateTarget(triplesClicked, thirdTargetPos);
                                             locationValid = true;
                                             replacementFound = true;
+                                            break;
                                         }
                                     }
                                     //If no replacement location is found, spawn in the randomly chosen position
@@ -651,6 +659,7 @@ public class ShootingGameController : MonoBehaviour
     void ResetGame()
     {
         score = 0;
+        targetsHit = 0;
         currentState = GameState.start;
         currentTime = 0.0f;
         currentCount = 3;
@@ -658,10 +667,12 @@ public class ShootingGameController : MonoBehaviour
 
         //maxTargets = 36;
         singleSpawns = 18;
-        doubleSpawns = 18;
-        tripleSpawns = 18;
+        doubleSpawns = 6;
+        tripleSpawns = 6;
 
         ClearLocations(singleLocations);
+
+        ShuffleSpawnTimes();
 
         if (timer == 0)
         {
@@ -787,6 +798,17 @@ public class ShootingGameController : MonoBehaviour
             {
                 loc[1, i].yPos = -14;
             }
+        }
+    }
+
+    void ShuffleSpawnTimes()
+    {
+        for (int i = 0; i < spawnTimeSlots.Length; i++)
+        {
+            int tmp = spawnTimeSlots[i];
+            int r = Random.Range(i, spawnTimeSlots.Length);
+            spawnTimeSlots[i] = spawnTimeSlots[r];
+            spawnTimeSlots[r] = tmp;
         }
     }
 }
