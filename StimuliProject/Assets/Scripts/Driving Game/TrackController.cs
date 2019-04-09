@@ -30,12 +30,19 @@ public class TrackController : MonoBehaviour
     bool bgNeedsChanging = false;
 
     //Variables for speed
-    public float speed = 10f;
+    public float speed = 30f;
+
+    //Variables for spawning new road section types
+    int[] spawnLengths = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
+    int shortSection = 6;
+    int mediumSection = 9;
+    int longSection = 12;
 
     // Use this for initialization
     void Start ()
     {
         InitTrack();
+        RandomiseSpawnTimes();
 	}
 	
 	// Update is called once per frame
@@ -124,5 +131,21 @@ public class TrackController : MonoBehaviour
             bgNeedsChanging = false;
         }
 
+    }
+
+    void SpawnRoadChange()
+    {
+
+    }
+
+    void RandomiseSpawnTimes()
+    {
+        for (int i = 0; i < spawnLengths.Length; i++)
+        {
+            int tmp = spawnLengths[i];
+            int r = Random.Range(i, spawnLengths.Length);
+            spawnLengths[i] = spawnLengths[r];
+            spawnLengths[r] = tmp;
+        }
     }
 }
