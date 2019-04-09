@@ -23,10 +23,11 @@ public class TrackController : MonoBehaviour
     float roadSpacing = 38.1f;
     float bgSpacing = 300f;
 
-    //Variables for changing tracks
-    float trackChangeVal = 40f;
+    //Variables for changing tracks ande background
     float cumuTrackPos, deltaTrackPos, lastTrackPos, currentTrackPos;
+    float cumuBGPos, deltaBGPos, lastBGPos, currentBGPos;
     bool trackNeedsChanging = false;
+    bool bgNeedsChanging = false;
 
     //Variables for speed
     public float speed = 10f;
@@ -48,6 +49,9 @@ public class TrackController : MonoBehaviour
         cBG = Instantiate(Background, gameObject.transform);
         cBG.transform.position = new Vector3(0f, 0f, 1.5f);
 
+        nBG = Instantiate(Background, gameObject.transform);
+        nBG.transform.position = new Vector3(0f, 300f, 1.5f);
+
         cTrack1 = Instantiate(TrackStartBlock, gameObject.transform);
         cTrack1.transform.position = new Vector3(0f, -30f, 1f);
 
@@ -64,7 +68,12 @@ public class TrackController : MonoBehaviour
 
     void SpaceTracks(GameObject curTrack, GameObject prevTrack)
     {
-        curTrack.transform.position = new Vector3(prevTrack.transform.localPosition.x, prevTrack.transform.localPosition.y + roadSpacing, prevTrack.transform.localPosition.z);
+        curTrack.transform.localPosition = new Vector3(prevTrack.transform.localPosition.x, prevTrack.transform.localPosition.y + roadSpacing, prevTrack.transform.localPosition.z);
+    }
+
+    void SpaceBG(GameObject curBG, GameObject prevBG)
+    {
+        curBG.transform.localPosition = new Vector3(prevBG.transform.localPosition.x, prevBG.transform.localPosition.y + bgSpacing, prevBG.transform.localPosition.z);
     }
 
     void UpdateTracks()
@@ -76,7 +85,7 @@ public class TrackController : MonoBehaviour
         cumuTrackPos += deltaTrackPos;
         lastTrackPos = currentTrackPos;
 
-        if (cumuTrackPos >= 40)
+        if (cumuTrackPos >= roadSpacing)
         {
             cumuTrackPos = 0f;
             trackNeedsChanging = true;
@@ -91,6 +100,28 @@ public class TrackController : MonoBehaviour
 
             cTrack4 = Instantiate(TrackStraight, gameObject.transform);
             SpaceTracks(cTrack4, cTrack3);
+            trackNeedsChanging = false;
+        }
+
+        currentBGPos = gameObject.transform.position.y;
+        deltaBGPos = lastBGPos - currentBGPos;
+        cumuBGPos += deltaBGPos;
+        lastBGPos = currentBGPos;
+
+        if (cumuBGPos >= bgSpacing)
+        {
+            cumuBGPos = 0f;
+            bgNeedsChanging = true;
+        }
+
+        if (bgNeedsChanging)
+        {
+            Destroy(cBG);
+            cBG = nBG;
+
+            nBG = Instantiate(Background, gameObject.transform);
+            SpaceBG(nBG, cBG);
+            bgNeedsChanging = false;
         }
 
     }
