@@ -9,40 +9,47 @@ public class TrackController : MonoBehaviour
     public GameObject TrackStraight;
     public GameObject TrackLeftTurn;
     public GameObject TrackLeftStraight;
+    public GameObject TrackLeftReturn;
     public GameObject TrackRightTurn;
     public GameObject TrackRightStraight;
-    public GameObject TrackForkSplit;
-    public GameObject TrackForkStraight;
-    public GameObject TrackForkJoin;
+    public GameObject TrackRightReturn;
+    public GameObject TrackSplitFork;
+    public GameObject TrackSplitStraight;
+    public GameObject TrackSplitJoin;
+
+    //Variables for track position state
+    enum TrackPosition {left, right, split, center};
+    TrackPosition currentPosition = TrackPosition.center;
 
     //Create variables for current and next background, and all the current tracks
     GameObject cBG, nBG;
-    GameObject cTrack1, cTrack2, cTrack3, cTrack4, cTrack5, nTrack;
+    GameObject cTrack1, cTrack2, cTrack3, cTrack4, nTrack, dTrack;
 
     //Variables for tile spacings
     float roadSpacing = 38.1f;
     float bgSpacing = 300f;
+    float returnSpacing = 19.05f;
 
     //Variables for changing tracks ande background
     float cumuTrackPos, deltaTrackPos, lastTrackPos, currentTrackPos;
     float cumuBGPos, deltaBGPos, lastBGPos, currentBGPos;
     bool trackNeedsChanging = false;
     bool bgNeedsChanging = false;
+    int changesSinceLastSeg = 0;
+    int changesInCurDirection = 0;
+    int currentSegment = 0;
+    int[] segmentLengths = {3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9};
 
     //Variables for speed
-    public float speed = 30f;
+    public float speed = 30f;    
 
-    //Variables for spawning new road section types
-    int[] spawnLengths = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
-    int shortSection = 6;
-    int mediumSection = 9;
-    int longSection = 12;
+    //Variables for game states to organise spawning positions
 
     // Use this for initialization
     void Start ()
     {
         InitTrack();
-        RandomiseSpawnTimes();
+        RandomiseSegmentLengths();
 	}
 	
 	// Update is called once per frame
@@ -66,16 +73,18 @@ public class TrackController : MonoBehaviour
         cTrack2.transform.position = new Vector3(0f, 8.1f, 1f);
 
         cTrack3 = Instantiate(TrackStraight, gameObject.transform);
-        SpaceTracks(cTrack3, cTrack2);
+        cTrack3.transform.position = new Vector3(0f, 46.2f, 1f);
 
         cTrack4 = Instantiate(TrackStraight, gameObject.transform);
-        SpaceTracks(cTrack4, cTrack3);
-        
+        cTrack4.transform.position = new Vector3(0f, 84.3f, 1f);
+
+        nTrack = Instantiate(TrackStraight, gameObject.transform);
+        nTrack.transform.position = new Vector3(0f, 122.4f, 1f);
     }
 
     void SpaceTracks(GameObject curTrack, GameObject prevTrack)
     {
-        curTrack.transform.localPosition = new Vector3(prevTrack.transform.localPosition.x, prevTrack.transform.localPosition.y + roadSpacing, prevTrack.transform.localPosition.z);
+        curTrack.transform.localPosition = new Vector3(curTrack.transform.localPosition.x, prevTrack.transform.localPosition.y + roadSpacing, curTrack.transform.localPosition.z);
     }
 
     void SpaceBG(GameObject curBG, GameObject prevBG)
@@ -85,67 +94,182 @@ public class TrackController : MonoBehaviour
 
     void UpdateTracks()
     {
+        //Move the tracks
         gameObject.transform.Translate(Vector3.down * speed * Time.deltaTime);
 
+        //Calculate the current track spacing
         currentTrackPos = gameObject.transform.position.y;
         deltaTrackPos = lastTrackPos - currentTrackPos;
         cumuTrackPos += deltaTrackPos;
         lastTrackPos = currentTrackPos;
 
+        //Check for track spacing and amend variables
         if (cumuTrackPos >= roadSpacing)
         {
             cumuTrackPos = 0f;
             trackNeedsChanging = true;
         }
 
+        //Change the tracks if needed
         if (trackNeedsChanging)
         {
+            //Shift up the tracks
             Destroy(cTrack1);
             cTrack1 = cTrack2;
             cTrack2 = cTrack3;
             cTrack3 = cTrack4;
+            cTrack4 = nTrack;
 
-            cTrack4 = Instantiate(TrackStraight, gameObject.transform);
-            SpaceTracks(cTrack4, cTrack3);
+            //Create a new track
+            //Check if nTrack is empty, if yes create a new object, if not use the nTrack and then delete it to clear it
+            if (dTrack == null)
+            {
+                switch (currentPosition)
+                {
+                    case TrackPosition.left:
+                    {
+                        if (changesInCurDirection >= segmentLengths[currentSegment])
+                        {
+                            nTrack = Instantiate(TrackLeftReturn, gameObject.transform, true);
+                            changesInCurDirection = 0;
+                            currentPosition = TrackPosition.center;
+                        }
+                        else
+                        {
+                            nTrack = Instantiate(TrackLeftStraight, gameObject.transform, true);
+                            changesInCurDirection++;
+                        }
+                        break;
+                    }
+                    case TrackPosition.right:
+                    {
+                        if (changesInCurDirection >= segmentLengths[currentSegment])
+                        {
+                            nTrack = Instantiate(TrackRightReturn, gameObject.transform, true);
+                            changesInCurDirection = 0;
+                            currentPosition = TrackPosition.center;
+                        }
+                        else
+                        {
+                            nTrack = Instantiate(TrackRightStraight, gameObject.transform, true);
+                            changesInCurDirection++;
+                        }
+                        break;
+                    }
+                    case TrackPosition.split:
+                    {
+                        if (changesInCurDirection >= segmentLengths[currentSegment])
+                        {
+                            nTrack = Instantiate(TrackSplitJoin, gameObject.transform, true);
+                            changesInCurDirection = 0;
+                            currentPosition = TrackPosition.center;
+                        }
+                        else
+                        {
+                            nTrack = Instantiate(TrackSplitStraight, gameObject.transform, true);
+                            changesInCurDirection++;
+                        }
+                        break;
+                    }
+                    case TrackPosition.center:
+                    {
+                        nTrack = Instantiate(TrackStraight, gameObject.transform, true);
+                        changesSinceLastSeg++;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                nTrack = dTrack;
+                Destroy(dTrack);
+            }
+
+            SpaceTracks(nTrack, cTrack4);
+
+            //Amend the class variables 
             trackNeedsChanging = false;
         }
 
+        //Calculate current background spacing
         currentBGPos = gameObject.transform.position.y;
         deltaBGPos = lastBGPos - currentBGPos;
         cumuBGPos += deltaBGPos;
         lastBGPos = currentBGPos;
 
+        //Check for background spacing and amend variables
         if (cumuBGPos >= bgSpacing)
         {
             cumuBGPos = 0f;
             bgNeedsChanging = true;
         }
 
+        //Change the background if needed
         if (bgNeedsChanging)
         {
+            //Shift the backgrounds
             Destroy(cBG);
             cBG = nBG;
 
+            //Create a new background
             nBG = Instantiate(Background, gameObject.transform);
             SpaceBG(nBG, cBG);
             bgNeedsChanging = false;
         }
+    }    
 
+    public void SetChangesSinceLastSeg(int newCount)
+    {
+        changesSinceLastSeg = newCount;
     }
 
-    void SpawnRoadChange()
+    public int GetChangesSinceLastSeg()
     {
-
+        return changesSinceLastSeg;
     }
 
-    void RandomiseSpawnTimes()
+    public void ChangeDirection(string type)
     {
-        for (int i = 0; i < spawnLengths.Length; i++)
+        //Spawn the road given in the position given and queue in nTrack
+        switch (type)
         {
-            int tmp = spawnLengths[i];
-            int r = Random.Range(i, spawnLengths.Length);
-            spawnLengths[i] = spawnLengths[r];
-            spawnLengths[r] = tmp;
+            case "Left":
+            {
+                dTrack = Instantiate(TrackLeftTurn, gameObject.transform, true);
+                SpaceTracks(nTrack, cTrack4);
+                currentPosition = TrackPosition.left;
+                changesSinceLastSeg = 0;
+                break;
+            }
+            case "Right":
+            {
+                dTrack = Instantiate(TrackRightTurn, gameObject.transform, true);
+                SpaceTracks(nTrack, cTrack4);
+                currentPosition = TrackPosition.right;
+                changesSinceLastSeg = 0;
+                break;
+            }
+            case "Split":
+            {
+                dTrack = Instantiate(TrackSplitFork, gameObject.transform, true);
+                SpaceTracks(nTrack, cTrack4);
+                currentPosition = TrackPosition.split;
+                changesSinceLastSeg = 0;
+                break;
+            }
+            default:
+                break;
+        }
+        currentSegment++;
+    }
+    void RandomiseSegmentLengths()
+    {
+        for (int i = 0; i < segmentLengths.Length; i++)
+        {
+            int tmp = segmentLengths[i];
+            int r = Random.Range(i, segmentLengths.Length);
+            segmentLengths[i] = segmentLengths[r];
+            segmentLengths[r] = tmp;
         }
     }
 }
