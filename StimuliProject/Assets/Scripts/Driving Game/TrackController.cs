@@ -30,9 +30,10 @@ public class TrackController : MonoBehaviour
     float bgSpacing = 300f;
     float returnSpacing = 19.05f;
 
-    //Variables for changing tracks ande background
+    //Variables for changing tracks and background
     float cumuTrackPos, deltaTrackPos, lastTrackPos, currentTrackPos;
     float cumuBGPos, deltaBGPos, lastBGPos, currentBGPos;
+    bool directionChange = false;
     bool trackNeedsChanging = false;
     bool bgNeedsChanging = false;
     int changesSinceLastSeg = 0;
@@ -121,8 +122,8 @@ public class TrackController : MonoBehaviour
             cTrack4 = nTrack;
 
             //Create a new track
-            //Check if nTrack is empty, if yes create a new object, if not use the nTrack and then delete it to clear it
-            if (dTrack == null)
+            //Check if dTrack is empty, if yes create a new object, if not use the nTrack and then delete it to clear it
+            if (!directionChange)
             {
                 switch (currentPosition)
                 {
@@ -179,10 +180,27 @@ public class TrackController : MonoBehaviour
                     }
                 }
             }
-            else
+            else if (directionChange)
             {
-                nTrack = dTrack;
-                Destroy(dTrack);
+                switch (currentPosition)
+                {
+                    case TrackPosition.left:
+                    {
+                        nTrack = Instantiate(TrackLeftTurn, gameObject.transform, true);
+                        break;
+                    }
+                    case TrackPosition.right:
+                    {
+                        nTrack = Instantiate(TrackRightTurn, gameObject.transform, true);
+                        break;
+                    }
+                    case TrackPosition.split:
+                    {
+                        nTrack = Instantiate(TrackSplitFork, gameObject.transform, true);
+                        break;
+                    }
+                }
+                directionChange = false;
             }
 
             SpaceTracks(nTrack, cTrack4);
@@ -235,24 +253,27 @@ public class TrackController : MonoBehaviour
         {
             case "Left":
             {
-                dTrack = Instantiate(TrackLeftTurn, gameObject.transform, true);
-                SpaceTracks(nTrack, cTrack4);
+                //dTrack = Instantiate(TrackLeftTurn, gameObject.transform, true);
+                //SpaceTracks(dTrack, cTrack4);
+                directionChange = true;
                 currentPosition = TrackPosition.left;
                 changesSinceLastSeg = 0;
                 break;
             }
             case "Right":
             {
-                dTrack = Instantiate(TrackRightTurn, gameObject.transform, true);
-                SpaceTracks(nTrack, cTrack4);
+                //dTrack = Instantiate(TrackRightTurn, gameObject.transform, true);
+                //SpaceTracks(dTrack, cTrack4);
+                directionChange = true;
                 currentPosition = TrackPosition.right;
                 changesSinceLastSeg = 0;
                 break;
             }
             case "Split":
             {
-                dTrack = Instantiate(TrackSplitFork, gameObject.transform, true);
-                SpaceTracks(nTrack, cTrack4);
+                //dTrack = Instantiate(TrackSplitFork, gameObject.transform, true);
+                //SpaceTracks(dTrack, cTrack4);
+                directionChange = true;
                 currentPosition = TrackPosition.split;
                 changesSinceLastSeg = 0;
                 break;
