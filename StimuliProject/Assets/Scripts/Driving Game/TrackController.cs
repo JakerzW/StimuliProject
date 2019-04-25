@@ -28,7 +28,6 @@ public class TrackController : MonoBehaviour
     //Variables for tile spacings
     float roadSpacing = 38.1f;
     float bgSpacing = 300f;
-    float returnSpacing = 19.05f;
 
     //Variables for changing tracks and background
     float cumuTrackPos, deltaTrackPos, lastTrackPos, currentTrackPos;
@@ -39,12 +38,14 @@ public class TrackController : MonoBehaviour
     int changesSinceLastSeg = 0;
     int changesInCurDirection = 0;
     int currentSegment = 0;
-    int[] segmentLengths = {3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9};
+    int[] segmentLengths = {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3};
 
     //Variables for speed
-    public float speed = 30f;    
+    public float speed = 30f;
 
-    //Variables for game states to organise spawning positions
+    //State variable
+    public GameObject HUD;
+    DrivingGameController.GameState currentState;
 
     // Use this for initialization
     void Start ()
@@ -56,7 +57,11 @@ public class TrackController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        UpdateTracks();
+        currentState = HUD.GetComponent<DrivingGameController>().GetGameState();
+        if (currentState == DrivingGameController.GameState.play)
+        {
+            UpdateTracks();
+        }
 	}
 
     public void InitTrack()

@@ -1,27 +1,119 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DrivingGameController : MonoBehaviour {
 
     //Variables for spawning new road segment types
-    int[] spawnLengths = { 2, 2, 2, 2, 2, 5, 5, 5, 5, 5, 8, 8, 8, 8, 8 };
+    int[] spawnLengths = { 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };
     string[] directionTypes = { "Left", "Left", "Left", "Left", "Left", "Right", "Right", "Right", "Right", "Right", "Split", "Split", "Split", "Split", "Split" };
     int currentSegment = 0;
     int changesSinceLastSeg = 0;
     public GameObject Track;
 
+    public enum GameState { start, play, end };
+    GameState currentState;
+
+    //Game timer variables defined
+    float currentTime;
+    int currentCount;
+    public float timer;
+
+    public Text countdownText, timerText, gameOverText;
+
     // Use this for initialization
     void Start ()
     {
-        RandomiseSpawnTimes();
-        RandomiseDirections();
+        ResetGame();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        CheckForDirectionChange();
+        currentTime += Time.deltaTime;
+
+        if (currentState == GameState.start)
+        {
+            if (currentTime > 1 && currentTime < 2)
+            {
+                currentCount = 2;
+            }
+            else if (currentTime > 2 && currentTime < 3)
+            {
+                currentCount = 1;
+            }
+            else if (currentTime > 3 && currentTime < 4)
+            {
+                currentCount = 0;
+            }
+            else if (currentTime > 4)
+            {
+                countdownText.enabled = false;
+                timerText.enabled = true;
+                currentState = GameState.play;
+            }
+        }
+
+        if (currentState == GameState.play)
+        {
+            timer -= Time.deltaTime;
+
+            if (timer <= 0)
+            {
+                timer = 0;
+                currentState = GameState.end;
+            }
+            else
+            {
+                CheckForDirectionChange();
+            }
+        }
+
+        if (currentState == GameState.end)
+        {
+            GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
+            for (int i = 0; i < targets.Length; i++)
+            {
+                Destroy(targets[i]);
+            }
+
+            gameOverText.enabled = true;
+            gameOverText.text = "Game Over";
+            timerText.enabled = false;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                ResetGame();
+            }
+        }
+    }
+
+    void OnGUI()
+    {
+        if (currentState == GameState.start)
+        {
+            if (currentCount > 0)
+            {
+                countdownText.text = currentCount.ToString();
+            }
+            else if (currentCount == 0)
+            {
+                countdownText.text = "Go!";
+            }
+        }
+
+        if (currentState == GameState.play)
+        {
+            if (timerText == null)
+            {
+                Debug.Log("Timer Text is null.");
+            }
+            else
+            {
+                timerText.text = "Time: " + GetTimer((int)timer);
+            }
+        }
     }
 
     void CheckForDirectionChange()
@@ -57,5 +149,54 @@ public class DrivingGameController : MonoBehaviour {
             directionTypes[i] = directionTypes[r];
             directionTypes[r] = tmp;
         }
+    }
+
+    string GetTimer(int s)
+    {
+        int mins;
+        int secs;
+        string minsStr;
+        string secsStr;
+
+        mins = s / 60;
+        secs = s % 60;
+
+        if (mins > 0)
+        {
+            minsStr = mins.ToString();
+        }
+        else
+        {
+            minsStr = "0";
+        }
+        if (secs < 10)
+        {
+            secsStr = "0" + secs.ToString();
+        }
+        else
+        {
+            secsStr = secs.ToString();
+        }
+
+        return minsStr + ":" + secsStr;
+    }
+
+    public GameState GetGameState()
+    {
+        return currentState;
+    }
+
+    void ResetGame()
+    {
+        RandomiseSpawnTimes();
+        RandomiseDirections();
+
+        currentCount = 3;
+        currentState = GameState.start;
+        currentTime = 0.0f;
+
+        countdownText.enabled = true;
+        timerText.enabled = false;
+        gameOverText.enabled = false;
     }
 }
