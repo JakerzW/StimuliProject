@@ -134,7 +134,7 @@ public class TrackController : MonoBehaviour
                 {
                     case TrackPosition.left:
                     {
-                        if (changesInCurDirection >= segmentLengths[currentSegment])
+                        if (currentSegment < 15 && changesInCurDirection >= segmentLengths[currentSegment])
                         {
                             nTrack = Instantiate(TrackLeftReturn, gameObject.transform, true);
                             changesInCurDirection = 0;
@@ -149,7 +149,7 @@ public class TrackController : MonoBehaviour
                     }
                     case TrackPosition.right:
                     {
-                        if (changesInCurDirection >= segmentLengths[currentSegment])
+                        if (currentSegment < 15 && changesInCurDirection >= segmentLengths[currentSegment])
                         {
                             nTrack = Instantiate(TrackRightReturn, gameObject.transform, true);
                             changesInCurDirection = 0;
@@ -164,7 +164,7 @@ public class TrackController : MonoBehaviour
                     }
                     case TrackPosition.split:
                     {
-                        if (changesInCurDirection >= segmentLengths[currentSegment])
+                        if (currentSegment < 15 && changesInCurDirection >= segmentLengths[currentSegment])
                         {
                             nTrack = Instantiate(TrackSplitJoin, gameObject.transform, true);
                             changesInCurDirection = 0;
@@ -297,5 +297,10 @@ public class TrackController : MonoBehaviour
             segmentLengths[i] = segmentLengths[r];
             segmentLengths[r] = tmp;
         }
+    }
+
+    public GameObject GetNextTrack()
+    {
+        return cTrack3;
     }
 }

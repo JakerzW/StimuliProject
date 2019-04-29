@@ -8,9 +8,10 @@ public class DrivingGameController : MonoBehaviour {
     //Variables for spawning new road segment types
     int[] spawnLengths = { 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };
     string[] directionTypes = { "Left", "Left", "Left", "Left", "Left", "Right", "Right", "Right", "Right", "Right", "Split", "Split", "Split", "Split", "Split" };
-    int currentSegment = 0;
+    public int currentSegment = 0;
     int changesSinceLastSeg = 0;
     public GameObject Track;
+    public GameObject Car;
 
     public enum GameState { start, play, end };
     GameState currentState;
@@ -119,12 +120,19 @@ public class DrivingGameController : MonoBehaviour {
     void CheckForDirectionChange()
     {
         changesSinceLastSeg = Track.GetComponent<TrackController>().GetChangesSinceLastSeg();
-        if (changesSinceLastSeg >= spawnLengths[currentSegment])
+        if (currentSegment < 15 && changesSinceLastSeg >= spawnLengths[currentSegment])
         {
             //Change the road segment using ChangeDirection() and giving road type variables
             //using randomly generated direction (array similar to time segments)
 
             Track.GetComponent<TrackController>().ChangeDirection(directionTypes[currentSegment]);
+ 
+            //Notify player about direction change
+            //Allow input for the car as soon as stimuli is shown
+            //Once input is detected, block any other inputs
+
+            Car.GetComponent<CarController>().UpdateDiection(directionTypes[currentSegment]);
+
             currentSegment++;
         }
     }
@@ -184,6 +192,11 @@ public class DrivingGameController : MonoBehaviour {
     public GameState GetGameState()
     {
         return currentState;
+    }
+
+    public void SetGameState(GameState newState)
+    {
+        currentState = newState; 
     }
 
     void ResetGame()
