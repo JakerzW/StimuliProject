@@ -11,20 +11,26 @@ public class CarController : MonoBehaviour
     bool inputMade;
     bool leftWasPressed;
     bool chosenDirectionIsCorrect;
+    bool directionHasBeenDisplayed;
 
     public enum Direction { left, right, split };
     public Direction nextDirection;
+    Direction currentDirection;
+    enum Position { left, middle, right};
+    Position currentPosition;
 
     float directionSpacing = 18.5f;
     Vector3 turningSpeed = Vector3.zero;
     public float turningTime;
 
     GameObject currentTrack;
+    GameObject thisTrack;
 
     // Start is called before the first frame update
     void Start()
     {
         inputAllowed = false;
+        directionHasBeenDisplayed = false;
     }
 
     // Update is called once per frame
@@ -35,6 +41,9 @@ public class CarController : MonoBehaviour
             if (inputAllowed)
             {
                 //Calculate input time
+                
+                GameController.GetComponent<DrivingGameController>().SetDirectionActive(false);
+                directionHasBeenDisplayed = false;
 
                 if (Input.mousePosition.x > (Screen.width / 2))
                 {
@@ -53,10 +62,11 @@ public class CarController : MonoBehaviour
         //If trigger activated and input is made, move the car
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (inputMade)
         {
+            inputMade = false;
             MoveCar();
         }
         else
@@ -95,51 +105,64 @@ public class CarController : MonoBehaviour
     void UpdateCar()
     {
         currentTrack = Track.GetComponent<TrackController>().GetNextTrack();
-        if (currentTrack.CompareTag("DirectionChange"))
+        
+        if (currentTrack.CompareTag("DirectionChange") && !directionHasBeenDisplayed && thisTrack != currentTrack)
         {
             //Display stimuli and allow input from player
+
+            thisTrack = currentTrack;
             AllowInput(true);
-            GameController.GetComponent<DrivingGameController>().DisplayDirection(currentTrack.ToString());
+
             switch (currentTrack.GetComponent<TileID>().GetID())
             {
                 case "Right Turn":
                 {
                     GameController.GetComponent<DrivingGameController>().DisplayDirection("Right");
+                    currentDirection = Direction.right;
                     break;
                 }
                 case "Right Return":
                 {
                     GameController.GetComponent<DrivingGameController>().DisplayDirection("Left");
+                    currentDirection = Direction.left;
                     break;
                 }
                 case "Left Turn":
                 {
                     GameController.GetComponent<DrivingGameController>().DisplayDirection("Left");
+                    currentDirection = Direction.left;
                     break;
                 }
                 case "Left Return":
                 {
                     GameController.GetComponent<DrivingGameController>().DisplayDirection("Right");
+                    currentDirection = Direction.right;
                     break;
                 }
                 case "Split Fork":
                 {
                     GameController.GetComponent<DrivingGameController>().DisplayDirection("Split");
+                    currentDirection = Direction.split;
                     break;
                 }
                 case "Split Join":
                 {
                     GameController.GetComponent<DrivingGameController>().DisplayDirection("Join");
+                    currentDirection = Direction.split;
                     break;
                 }
             }
+
+            directionHasBeenDisplayed = true;
+            GameController.GetComponent<DrivingGameController>().SetDirectionActive(true);
+
             //Start timer between now and input from user
         }
     }
 
     void CheckInput(bool leftWasPressed)
     {
-        switch (nextDirection)
+        switch (currentDirection)
         {
             case Direction.left:
             {
@@ -157,7 +180,7 @@ public class CarController : MonoBehaviour
             }
             case Direction.right:
             {
-                if (!leftWasPressed)
+                if (leftWasPressed)
                 {
                     chosenDirectionIsCorrect = false;
                     //Direction is correct
@@ -171,17 +194,57 @@ public class CarController : MonoBehaviour
             }
             case Direction.split:
             {
-                if (leftWasPressed)
+                if (thisTrack.GetComponent<TileID>().GetID() == "Split Fork")
                 {
-                    chosenDirectionIsCorrect = true;
-                    //Direction is correct
+                    if (leftWasPressed)
+                    {
+                        chosenDirectionIsCorrect = true;
+                        currentPosition = Position.left;
+                        //Direction is correct
+                    }
+                    else
+                    {
+                        chosenDirectionIsCorrect = true;
+                        currentPosition = Position.right;
+                        //Direction is correct
+                    }
+                    break;
                 }
-                else
+                else 
                 {
-                    chosenDirectionIsCorrect = true;
-                    //Direction is correct
+                    if (currentPosition == Position.left)
+                    {
+                        if (leftWasPressed)
+                        {
+                            chosenDirectionIsCorrect = false;
+                            //Direction is correct
+                        }
+                        else
+                        {
+                            chosenDirectionIsCorrect = true;
+                            currentPosition = Position.middle;
+                            //Direction is correct
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        if (leftWasPressed)
+                        {
+                            chosenDirectionIsCorrect = true;
+                            currentPosition = Position.middle;
+                            //Direction is correct
+                        }
+                        else
+                        {
+                            chosenDirectionIsCorrect = false;
+                            //Direction is correct
+                        }
+                        break;
+                    }
                 }
-                break;
+
+                
             }
         }
         inputMade = true;

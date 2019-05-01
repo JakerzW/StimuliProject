@@ -7,7 +7,7 @@ public class DrivingGameController : MonoBehaviour {
 
     //Variables for spawning new road segment types
     int[] spawnLengths = { 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };
-    string[] directionTypes = { "Left", "Left", "Left", "Left", "Left", "Right", "Right", "Right", "Right", "Right", "Split", "Split", "Split", "Split", "Split" };
+    string[] directionTypes = { "Split", "Split", "Split", "Split", "Split", "Left", "Left", "Left", "Left", "Left", "Right", "Right", "Right", "Right", "Right" };
     public int currentSegment = 0;
     int changesSinceLastSeg = 0;
     public GameObject Track;
@@ -211,10 +211,16 @@ public class DrivingGameController : MonoBehaviour {
         countdownText.enabled = true;
         timerText.enabled = false;
         gameOverText.enabled = false;
+        directionText.enabled = false;
     }
 
     public void DisplayDirection(string dir)
     {
         directionText.text = dir;
+    }
+
+    public void SetDirectionActive(bool val)
+    {
+        directionText.enabled = val;
     }
 }
