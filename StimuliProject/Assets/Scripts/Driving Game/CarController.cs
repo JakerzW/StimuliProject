@@ -12,16 +12,18 @@ public class CarController : MonoBehaviour
     bool leftWasPressed;
     bool chosenDirectionIsCorrect;
     bool directionHasBeenDisplayed;
+    bool carIsMoving;
 
     public enum Direction { left, right, split };
     public Direction nextDirection;
     Direction currentDirection;
-    enum Position { left, middle, right};
-    Position currentPosition;
+    public enum Position { left, middle, right};
+    public Position currentPosition;
 
     float directionSpacing = 18.5f;
     Vector3 turningSpeed = Vector3.zero;
     public float turningTime;
+    public float moveSpeed;
 
     GameObject currentTrack;
     GameObject thisTrack;
@@ -67,7 +69,8 @@ public class CarController : MonoBehaviour
         if (inputMade)
         {
             inputMade = false;
-            MoveCar();
+            //MoveCar();
+            carIsMoving = true;
         }
         else
         {
@@ -158,6 +161,11 @@ public class CarController : MonoBehaviour
 
             //Start timer between now and input from user
         }
+
+        if (carIsMoving)
+        {
+            MoveCar();
+        }
     }
 
     void CheckInput(bool leftWasPressed)
@@ -168,13 +176,21 @@ public class CarController : MonoBehaviour
             {
                 if (leftWasPressed)
                 {
-                    chosenDirectionIsCorrect = true;
                     //Direction is correct
+                    chosenDirectionIsCorrect = true;
+                    if (currentPosition == Position.right)
+                    {
+                        currentPosition = Position.middle;
+                    }
+                    else
+                    {
+                        currentPosition = Position.left;
+                    }
                 }
                 else
                 {
-                    chosenDirectionIsCorrect = false;
                     //Direction is not correct
+                    chosenDirectionIsCorrect = false;
                 }
                 break;
             }
@@ -182,13 +198,21 @@ public class CarController : MonoBehaviour
             {
                 if (leftWasPressed)
                 {
-                    chosenDirectionIsCorrect = false;
                     //Direction is correct
+                    chosenDirectionIsCorrect = false;
                 }
                 else
                 {
-                    chosenDirectionIsCorrect = true;
                     //Direction is not correct
+                    chosenDirectionIsCorrect = true;
+                    if (currentPosition == Position.left)
+                    {
+                        currentPosition = Position.middle;
+                    }
+                    else
+                    {
+                        currentPosition = Position.right;
+                    }
                 }
                 break;
             }
@@ -198,15 +222,15 @@ public class CarController : MonoBehaviour
                 {
                     if (leftWasPressed)
                     {
+                        //Direction is correct
                         chosenDirectionIsCorrect = true;
                         currentPosition = Position.left;
-                        //Direction is correct
                     }
                     else
                     {
+                        //Direction is correct
                         chosenDirectionIsCorrect = true;
                         currentPosition = Position.right;
-                        //Direction is correct
                     }
                     break;
                 }
@@ -216,14 +240,14 @@ public class CarController : MonoBehaviour
                     {
                         if (leftWasPressed)
                         {
-                            chosenDirectionIsCorrect = false;
                             //Direction is correct
+                            chosenDirectionIsCorrect = false;
                         }
                         else
                         {
+                            //Direction is correct
                             chosenDirectionIsCorrect = true;
                             currentPosition = Position.middle;
-                            //Direction is correct
                         }
                         break;
                     }
@@ -231,14 +255,14 @@ public class CarController : MonoBehaviour
                     {
                         if (leftWasPressed)
                         {
+                            //Direction is correct
                             chosenDirectionIsCorrect = true;
                             currentPosition = Position.middle;
-                            //Direction is correct
                         }
                         else
                         {
-                            chosenDirectionIsCorrect = false;
                             //Direction is correct
+                            chosenDirectionIsCorrect = false;
                         }
                         break;
                     }
@@ -262,9 +286,24 @@ public class CarController : MonoBehaviour
             if (leftWasPressed)
             {
                 gameObject.transform.position = Vector3.SmoothDamp(gameObject.transform.position,
-                                                                   new Vector3(gameObject.transform.position.x - directionSpacing, 
+                                                                   new Vector3(gameObject.transform.position.x - directionSpacing,
                                                                    gameObject.transform.position.y, gameObject.transform.position.z),
                                                                    ref turningSpeed, turningTime);
+                if (currentPosition == Position.middle)
+                {
+                    if (gameObject.transform.position.x <= 0)
+                    {
+                        carIsMoving = false;
+                    }
+                }
+                else
+                {
+                    if (gameObject.transform.position.x <= -directionSpacing)
+                    {
+                        carIsMoving = false;
+                    }
+                }
+                
 
             }
             else
@@ -273,6 +312,22 @@ public class CarController : MonoBehaviour
                                                                    new Vector3(gameObject.transform.position.x + directionSpacing,
                                                                    gameObject.transform.position.y, gameObject.transform.position.z),
                                                                    ref turningSpeed, turningTime);
+                if (currentPosition == Position.middle)
+                {
+                    if (gameObject.transform.position.x >= 0)
+                    {
+                        carIsMoving = false;
+                    }
+                }
+                else
+                {
+                    if (gameObject.transform.position.x >= directionSpacing)
+                    {
+                        carIsMoving = false;
+                    }
+                }
+                
+
             }
         }        
     }
