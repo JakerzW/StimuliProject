@@ -21,7 +21,7 @@ public class DrivingGameController : MonoBehaviour {
     int currentCount;
     public float timer;
 
-    public Text countdownText, timerText, gameOverText;
+    public Text countdownText, timerText, gameOverText, directionText;
 
     // Use this for initialization
     void Start ()
@@ -211,5 +211,10 @@ public class DrivingGameController : MonoBehaviour {
         countdownText.enabled = true;
         timerText.enabled = false;
         gameOverText.enabled = false;
+    }
+
+    public void DisplayDirection(string dir)
+    {
+        directionText.text = dir;
     }
 }

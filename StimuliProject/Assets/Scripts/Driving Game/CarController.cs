@@ -12,8 +12,12 @@ public class CarController : MonoBehaviour
     bool leftWasPressed;
     bool chosenDirectionIsCorrect;
 
-    enum Direction { left, right, split };
-    Direction nextDirection;
+    public enum Direction { left, right, split };
+    public Direction nextDirection;
+
+    float directionSpacing = 18.5f;
+    Vector3 turningSpeed = Vector3.zero;
+    public float turningTime;
 
     GameObject currentTrack;
 
@@ -43,6 +47,21 @@ public class CarController : MonoBehaviour
 
                 CheckInput(leftWasPressed);
             }
+        }
+
+        UpdateCar();
+        //If trigger activated and input is made, move the car
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (inputMade)
+        {
+            MoveCar();
+        }
+        else
+        {
+            GameController.GetComponent<DrivingGameController>().SetGameState(DrivingGameController.GameState.end);
         }
     }
 
@@ -80,7 +99,40 @@ public class CarController : MonoBehaviour
         {
             //Display stimuli and allow input from player
             AllowInput(true);
-
+            GameController.GetComponent<DrivingGameController>().DisplayDirection(currentTrack.ToString());
+            switch (currentTrack.GetComponent<TileID>().GetID())
+            {
+                case "Right Turn":
+                {
+                    GameController.GetComponent<DrivingGameController>().DisplayDirection("Right");
+                    break;
+                }
+                case "Right Return":
+                {
+                    GameController.GetComponent<DrivingGameController>().DisplayDirection("Left");
+                    break;
+                }
+                case "Left Turn":
+                {
+                    GameController.GetComponent<DrivingGameController>().DisplayDirection("Left");
+                    break;
+                }
+                case "Left Return":
+                {
+                    GameController.GetComponent<DrivingGameController>().DisplayDirection("Right");
+                    break;
+                }
+                case "Split Fork":
+                {
+                    GameController.GetComponent<DrivingGameController>().DisplayDirection("Split");
+                    break;
+                }
+                case "Split Join":
+                {
+                    GameController.GetComponent<DrivingGameController>().DisplayDirection("Join");
+                    break;
+                }
+            }
             //Start timer between now and input from user
         }
     }
@@ -114,7 +166,7 @@ public class CarController : MonoBehaviour
                 {
                     chosenDirectionIsCorrect = true;
                     //Direction is not correct
-                }                      
+                }
                 break;
             }
             case Direction.split:
@@ -132,6 +184,7 @@ public class CarController : MonoBehaviour
                 break;
             }
         }
+        inputMade = true;
     }
 
     void MoveCar()
@@ -143,8 +196,21 @@ public class CarController : MonoBehaviour
         }
         else
         {
+            if (leftWasPressed)
+            {
+                gameObject.transform.position = Vector3.SmoothDamp(gameObject.transform.position,
+                                                                   new Vector3(gameObject.transform.position.x - directionSpacing, 
+                                                                   gameObject.transform.position.y, gameObject.transform.position.z),
+                                                                   ref turningSpeed, turningTime);
 
-        }
-        
+            }
+            else
+            {
+                gameObject.transform.position = Vector3.SmoothDamp(gameObject.transform.position,
+                                                                   new Vector3(gameObject.transform.position.x + directionSpacing,
+                                                                   gameObject.transform.position.y, gameObject.transform.position.z),
+                                                                   ref turningSpeed, turningTime);
+            }
+        }        
     }
 }
