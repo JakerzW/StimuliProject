@@ -60,6 +60,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Dodging Game\DodgingGameController.cs" />
+    <Compile Include="Assets\Scripts\Dodging Game\MeteorController.cs" />
+    <Compile Include="Assets\Scripts\Dodging Game\ShipController.cs" />
     <Compile Include="Assets\Scripts\Driving Game\CarController.cs" />
     <Compile Include="Assets\Scripts\Driving Game\DrivingGameController.cs" />
     <Compile Include="Assets\Scripts\Driving Game\TileID.cs" />
@@ -73,6 +76,7 @@
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_characters.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_objects.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_vehicles.xml" />
+    <None Include="Assets\Kenney\Space shooter assets (300 assets)\Spritesheet\sheet.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_tiles.xml" />
     <None Include="Assets\Kenney\Shooting Gallery (110 assets)\Spritesheets\spritesheet_objects.xml" />
     <Reference Include="Unity.TextMeshPro.Editor">
