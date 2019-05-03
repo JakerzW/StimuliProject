@@ -73,12 +73,6 @@ public class DrivingGameController : MonoBehaviour {
 
         if (currentState == GameState.end)
         {
-            GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
-            for (int i = 0; i < targets.Length; i++)
-            {
-                Destroy(targets[i]);
-            }
-
             gameOverText.enabled = true;
             gameOverText.text = "Game Over";
             timerText.enabled = false;

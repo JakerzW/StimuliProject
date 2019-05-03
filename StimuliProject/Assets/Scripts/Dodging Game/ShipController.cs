@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
-    Vector3 movementVelocity = Vector3.zero;
-    public float movementTime;
+    public float movementVelocity;
     Vector3 nextShipPosition;
     bool shipIsMoving;
+
+    //State variable
+    public GameObject HUD;
+    DodgingGameController.GameState currentState;
 
     // Start is called before the first frame update
     void Start()
@@ -18,22 +21,30 @@ public class ShipController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {           
-            nextShipPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 50)); 
-            shipIsMoving = true;
-        }
+        currentState = HUD.GetComponent<DodgingGameController>().GetGameState();
 
-        if (shipIsMoving)
+        if (currentState == DodgingGameController.GameState.play)
         {
-            MoveShip(nextShipPosition);
+            if (Input.GetMouseButtonDown(0))
+            {
+                nextShipPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 50));
+                shipIsMoving = true;
+            }
+
+            if (shipIsMoving)
+            {
+                MoveShip(nextShipPosition);
+            }
         }
     }
 
     void MoveShip(Vector3 mousePosOnClick)
     {
+        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, mousePosOnClick, movementVelocity * Time.deltaTime);
+    }
 
-        //gameObject.transform.position = Vector3.SmoothDamp(gameObject.transform.position, mousePosOnClick, ref movementVelocity, movementTime);
-        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, mousePosOnClick, movementTime * Time.deltaTime);
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        HUD.GetComponent<DodgingGameController>().SetGameState(DodgingGameController.GameState.end);
     }
 }
