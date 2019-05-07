@@ -10,12 +10,16 @@ public class DodgingGameController : MonoBehaviour
     int currentCount;
     public float timer;
 
-    public enum GameState { start, play, end };
+    public enum GameState { start, spawn, wait, end };
     GameState currentState;
 
     public Text countdownText, timerText, gameOverText;
 
+    public GameObject Ship;
     public GameObject meteor1, meteor2, meteor3, meteor4;
+    
+    int[] spawnType = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3 };
+    int currentSpawnType;    
 
     // Start is called before the first frame update
     void Start()
@@ -46,31 +50,38 @@ public class DodgingGameController : MonoBehaviour
             {
                 countdownText.enabled = false;
                 timerText.enabled = true;
-                currentState = GameState.play;
+                currentState = GameState.spawn;
             }
         }
 
-        if (currentState == GameState.play)
+        if (currentState == GameState.wait || currentState == GameState.spawn)
         {
             timer -= Time.deltaTime;
 
-            if (timer <= 0)
+            if (timer <= 0 || currentSpawnType >= 32)
             {
                 timer = 0;
                 currentState = GameState.end;
             }
-            else
+
+            if (currentState == GameState.wait)
             {
-                //Update Game
+                if (!AreMeteorsExisting())
+                {
+                    currentState = GameState.spawn;
+                }
+            }
+
+            else if (currentState == GameState.spawn)            
+            {
+                CreateMeteors();
+                currentState = GameState.wait;
+                currentSpawnType++;
             }
         }
 
         if (currentState == GameState.end)
         {
-            gameOverText.enabled = true;
-            gameOverText.text = "Game Over";
-            timerText.enabled = false;
-
             if (Input.GetMouseButtonDown(0))
             {
                 ResetGame();
@@ -93,7 +104,7 @@ public class DodgingGameController : MonoBehaviour
             }
         }
 
-        if (currentState == GameState.play)
+        if (currentState == GameState.wait || currentState == GameState.spawn)
         {
             if (timerText == null)
             {
@@ -104,8 +115,157 @@ public class DodgingGameController : MonoBehaviour
                 timerText.text = "Time: " + GetTimer((int)timer);
             }
         }
+
+        if (currentState == GameState.end)
+        {
+            gameOverText.enabled = true;
+            gameOverText.text = "Game Over";
+            timerText.enabled = false;
+        }
     }
-    
+
+    void CreateMeteors()
+    {
+        switch (spawnType[currentSpawnType])
+        {
+            case 1:
+            {
+                GameObject newMeteor1 = new GameObject();
+                int typeOfMeteor = Random.Range(1, 5);
+                int posOfMeteor = Random.Range(1, 5);
+
+                SetTypeOfMeteor(newMeteor1, typeOfMeteor);
+                SetPosOfMeteor(newMeteor1, posOfMeteor);
+
+                break;
+            }
+            case 2:
+            {
+                GameObject newMeteor1 = new GameObject();
+                GameObject newMeteor2 = new GameObject();
+                int typeOfMeteor = Random.Range(1, 5);
+                int posOfMeteor = Random.Range(1, 5);
+
+                SetTypeOfMeteor(newMeteor1, typeOfMeteor);
+                SetPosOfMeteor(newMeteor1, posOfMeteor);
+
+                typeOfMeteor++;
+                if (typeOfMeteor > 4)
+                {
+                    typeOfMeteor = 1;
+                }
+
+                posOfMeteor++;
+                if (posOfMeteor > 4)
+                {
+                    posOfMeteor = 1;
+                }
+
+                SetTypeOfMeteor(newMeteor2, typeOfMeteor);
+                SetPosOfMeteor(newMeteor1, posOfMeteor);
+
+                break;
+            }
+            case 3:
+            {
+                GameObject newMeteor1 = new GameObject();
+                GameObject newMeteor2 = new GameObject();
+                GameObject newMeteor3 = new GameObject();
+                int typeOfMeteor = Random.Range(1, 5);
+                int posOfMeteor = Random.Range(1, 5);
+
+                SetTypeOfMeteor(newMeteor1, typeOfMeteor);
+                SetPosOfMeteor(newMeteor1, posOfMeteor);
+
+                typeOfMeteor++;
+                if (typeOfMeteor > 4)
+                {
+                    typeOfMeteor = 1;
+                }
+
+                posOfMeteor++;
+                if (posOfMeteor > 4)
+                {
+                    posOfMeteor = 1;
+                }
+
+                SetTypeOfMeteor(newMeteor2, typeOfMeteor);
+                SetPosOfMeteor(newMeteor1, posOfMeteor);
+
+                typeOfMeteor++;
+                if (typeOfMeteor > 4)
+                {
+                    typeOfMeteor = 1;
+                }
+
+                posOfMeteor++;
+                if (posOfMeteor > 4)
+                {
+                    posOfMeteor = 1;
+                }
+
+                SetTypeOfMeteor(newMeteor3, typeOfMeteor);
+                SetPosOfMeteor(newMeteor1, posOfMeteor);
+
+                break;
+            }
+        }        
+    }
+
+    void SetTypeOfMeteor(GameObject meteor, int type)
+    {
+        switch (type)
+        {
+            case 1:
+            {
+                meteor = Instantiate(meteor1);
+                break;
+            }
+            case 2:
+            {
+                meteor = Instantiate(meteor2);
+                break;
+            }
+            case 3:
+            {
+                meteor = Instantiate(meteor3);
+                break;
+            }
+            case 4:
+            {
+                meteor = Instantiate(meteor4);
+                break;
+            }
+        }
+    }
+
+    void SetPosOfMeteor(GameObject meteor, int pos)
+    {
+        switch (pos)
+        {
+            case 1:
+            {
+                meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Left");
+                break;
+            }
+            case 2:
+            {
+                meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Right");
+                break;
+            }
+            case 3:
+            {
+                meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Top");
+                break;
+            }
+            case 4:
+            {
+                meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Bottom");
+                break;
+            }
+        }
+    }
+
     public void SetGameState(GameState newState)
     {
         currentState = newState;
@@ -156,5 +316,33 @@ public class DodgingGameController : MonoBehaviour
         countdownText.enabled = true;
         timerText.enabled = false;
         gameOverText.enabled = false;
+
+        RandomiseSpawnTypes();
+        currentSpawnType = 0;
+    }
+
+    bool AreMeteorsExisting()
+    {
+        GameObject[] existingMeteors;
+        existingMeteors = GameObject.FindGameObjectsWithTag("Meteor");
+        if (existingMeteors == null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void RandomiseSpawnTypes()
+    {
+        for (int i = 0; i < spawnType.Length; i++)
+        {
+            int tmp = spawnType[i];
+            int r = Random.Range(i, spawnType.Length);
+            spawnType[i] = spawnType[r];
+            spawnType[r] = tmp;
+        }
     }
 }

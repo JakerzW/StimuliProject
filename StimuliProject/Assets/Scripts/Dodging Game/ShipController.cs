@@ -15,7 +15,7 @@ public class ShipController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        ResetShip();
     }
 
     // Update is called once per frame
@@ -23,7 +23,7 @@ public class ShipController : MonoBehaviour
     {
         currentState = HUD.GetComponent<DodgingGameController>().GetGameState();
 
-        if (currentState == DodgingGameController.GameState.play)
+        if (currentState == DodgingGameController.GameState.wait)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -36,6 +36,17 @@ public class ShipController : MonoBehaviour
                 MoveShip(nextShipPosition);
             }
         }
+
+        if (currentState == DodgingGameController.GameState.end)
+        {
+            nextShipPosition = Vector3.zero;
+            shipIsMoving = false;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                ResetShip();
+            }
+        }
     }
 
     void MoveShip(Vector3 mousePosOnClick)
@@ -46,5 +57,10 @@ public class ShipController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         HUD.GetComponent<DodgingGameController>().SetGameState(DodgingGameController.GameState.end);
+    }
+
+    void ResetShip()
+    {
+        gameObject.transform.position = Vector3.zero;
     }
 }
