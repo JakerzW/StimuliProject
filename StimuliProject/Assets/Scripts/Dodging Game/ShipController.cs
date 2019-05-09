@@ -7,6 +7,7 @@ public class ShipController : MonoBehaviour
     public float movementVelocity;
     Vector3 nextShipPosition;
     bool shipIsMoving;
+    bool shipHasMoved;
 
     //State variable
     public GameObject HUD;
@@ -25,16 +26,22 @@ public class ShipController : MonoBehaviour
 
         if (currentState == DodgingGameController.GameState.wait)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !shipHasMoved)
             {
                 nextShipPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 50));
                 shipIsMoving = true;
+                shipHasMoved = true;
             }
 
             if (shipIsMoving)
             {
                 MoveShip(nextShipPosition);
             }
+        }
+
+        if (currentState == DodgingGameController.GameState.spawn)
+        {
+            shipHasMoved = false;
         }
 
         if (currentState == DodgingGameController.GameState.end)
@@ -56,7 +63,10 @@ public class ShipController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        HUD.GetComponent<DodgingGameController>().SetGameState(DodgingGameController.GameState.end);
+        if (collision.collider.CompareTag("Meteor"))
+        {
+            HUD.GetComponent<DodgingGameController>().SetGameState(DodgingGameController.GameState.end);
+        }
     }
 
     void ResetShip()

@@ -126,27 +126,25 @@ public class DodgingGameController : MonoBehaviour
 
     void CreateMeteors()
     {
+        Debug.Log("No. Meteors Spawned: " + spawnType[currentSpawnType]);
         switch (spawnType[currentSpawnType])
         {
             case 1:
             {
-                GameObject newMeteor1 = new GameObject();
                 int typeOfMeteor = Random.Range(1, 5);
                 int posOfMeteor = Random.Range(1, 5);
 
-                SetTypeOfMeteor(newMeteor1, typeOfMeteor);
+                GameObject newMeteor1 = SetTypeOfMeteor(typeOfMeteor);
                 SetPosOfMeteor(newMeteor1, posOfMeteor);
 
                 break;
             }
             case 2:
             {
-                GameObject newMeteor1 = new GameObject();
-                GameObject newMeteor2 = new GameObject();
                 int typeOfMeteor = Random.Range(1, 5);
                 int posOfMeteor = Random.Range(1, 5);
 
-                SetTypeOfMeteor(newMeteor1, typeOfMeteor);
+                GameObject newMeteor1 = SetTypeOfMeteor(typeOfMeteor);
                 SetPosOfMeteor(newMeteor1, posOfMeteor);
 
                 typeOfMeteor++;
@@ -161,20 +159,17 @@ public class DodgingGameController : MonoBehaviour
                     posOfMeteor = 1;
                 }
 
-                SetTypeOfMeteor(newMeteor2, typeOfMeteor);
-                SetPosOfMeteor(newMeteor1, posOfMeteor);
+                GameObject newMeteor2 = SetTypeOfMeteor(typeOfMeteor);
+                SetPosOfMeteor(newMeteor2, posOfMeteor);
 
                 break;
             }
             case 3:
             {
-                GameObject newMeteor1 = new GameObject();
-                GameObject newMeteor2 = new GameObject();
-                GameObject newMeteor3 = new GameObject();
                 int typeOfMeteor = Random.Range(1, 5);
                 int posOfMeteor = Random.Range(1, 5);
 
-                SetTypeOfMeteor(newMeteor1, typeOfMeteor);
+                GameObject newMeteor1 = SetTypeOfMeteor(typeOfMeteor);
                 SetPosOfMeteor(newMeteor1, posOfMeteor);
 
                 typeOfMeteor++;
@@ -189,8 +184,8 @@ public class DodgingGameController : MonoBehaviour
                     posOfMeteor = 1;
                 }
 
-                SetTypeOfMeteor(newMeteor2, typeOfMeteor);
-                SetPosOfMeteor(newMeteor1, posOfMeteor);
+                GameObject newMeteor2 = SetTypeOfMeteor(typeOfMeteor);
+                SetPosOfMeteor(newMeteor2, posOfMeteor);
 
                 typeOfMeteor++;
                 if (typeOfMeteor > 4)
@@ -204,37 +199,42 @@ public class DodgingGameController : MonoBehaviour
                     posOfMeteor = 1;
                 }
 
-                SetTypeOfMeteor(newMeteor3, typeOfMeteor);
-                SetPosOfMeteor(newMeteor1, posOfMeteor);
+                GameObject newMeteor3 = SetTypeOfMeteor(typeOfMeteor);
+                SetPosOfMeteor(newMeteor3, posOfMeteor);
 
                 break;
             }
         }        
     }
 
-    void SetTypeOfMeteor(GameObject meteor, int type)
+    GameObject SetTypeOfMeteor(int type)
     {
         switch (type)
         {
             case 1:
             {
-                meteor = Instantiate(meteor1);
-                break;
+                GameObject meteor = Instantiate(meteor1);
+                return meteor;
             }
             case 2:
             {
-                meteor = Instantiate(meteor2);
-                break;
+                GameObject meteor = Instantiate(meteor2);
+                return meteor;
             }
             case 3:
             {
-                meteor = Instantiate(meteor3);
-                break;
+                GameObject meteor = Instantiate(meteor3);
+                return meteor;
             }
             case 4:
             {
-                meteor = Instantiate(meteor4);
-                break;
+                GameObject meteor = Instantiate(meteor4);
+                return meteor;
+            }
+            default:
+            {
+                GameObject meteor = Instantiate(meteor1);
+                return meteor;
             }
         }
     }
@@ -325,7 +325,7 @@ public class DodgingGameController : MonoBehaviour
     {
         GameObject[] existingMeteors;
         existingMeteors = GameObject.FindGameObjectsWithTag("Meteor");
-        if (existingMeteors == null)
+        if (existingMeteors == null || existingMeteors.Length == 0)
         {
             return false;
         }

@@ -7,18 +7,28 @@ public class MeteorController : MonoBehaviour
     public GameObject HUD;
     DodgingGameController.GameState currentState;
 
-    public int velocity;
+    int velocity = 20;
     Vector2 movementDirection;
 
     Rigidbody2D rb;
 
-    struct MeteorInitVals
+    public struct MeteorInitVals
     {
+        public MeteorInitVals(Vector2 sp, Vector2 md)
+        {
+            startPos = sp;
+            movementDir = md;
+        }
+
         public Vector2 startPos;
         public Vector2 movementDir;
     }
 
-    MeteorInitVals left, right, top, bottom;
+    MeteorInitVals left = new MeteorInitVals(new Vector2(-75f, 0f), new Vector2(1f, 0f));
+    MeteorInitVals right = new MeteorInitVals(new Vector2(75f, 0f), new Vector2(-1f, 0f));
+    MeteorInitVals top = new MeteorInitVals(new Vector2(0f, 50f), new Vector2(0f, -1f));
+    MeteorInitVals bottom = new MeteorInitVals(new Vector2(0f, -50f), new Vector2(0f, 1f));
+
 
     // Start is called before the first frame update
     void Start()
@@ -26,18 +36,6 @@ public class MeteorController : MonoBehaviour
         HUD = GameObject.FindGameObjectWithTag("HUD");
 
         rb = gameObject.GetComponent<Rigidbody2D>();
-
-        left.startPos = new Vector2(-75f, 0f);
-        left.movementDir = new Vector2(1f, 0f);
-
-        right.startPos = new Vector2(75f, 0f);
-        right.movementDir = new Vector2(-1f, 0f);
-
-        top.startPos = new Vector2(50f, 0f);
-        top.movementDir = new Vector2(0f, -1f);
-
-        bottom.startPos = new Vector2(-50f, 0f);
-        bottom.movementDir = new Vector2(0f, 1f);
     }
 
     // Update is called once per frame
@@ -55,16 +53,15 @@ public class MeteorController : MonoBehaviour
     {
         if (collision.collider.CompareTag("Meteor"))
         {
+            Debug.Log("Meteors have collided.");
             Destroy(gameObject);
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.collider.CompareTag("Background"))
-        {
-            Destroy(gameObject);
-        }
+        Debug.Log("Meteor has left BG box.");
+        Destroy(gameObject);
     }
 
     void AssignMeteorValues(Vector2 startPos, Vector2 movementDir)
@@ -84,24 +81,28 @@ public class MeteorController : MonoBehaviour
         {
             case "Left":
             {
+                Debug.Log("Left Meteor Created.");
                 gameObject.transform.position = new Vector2(left.startPos.x, shipPos.y);
                 movementDirection = left.movementDir;
                 break;
             }
             case "Right":
             {
+                Debug.Log("Right Meteor Created.");
                 gameObject.transform.position = new Vector2(right.startPos.x, shipPos.y);
                 movementDirection = right.movementDir;
                 break;
             }
             case "Top":
             {
+                Debug.Log("Top Meteor Created.");
                 gameObject.transform.position = new Vector2(shipPos.x, top.startPos.y);
                 movementDirection = top.movementDir;
                 break;
             }
             case "Bottom":
             {
+                Debug.Log("Bottom Meteor Created.");
                 gameObject.transform.position = new Vector2(shipPos.x, bottom.startPos.y);
                 movementDirection = bottom.movementDir;
                 break;
