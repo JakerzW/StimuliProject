@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ShootingGameController : MonoBehaviour
 {
@@ -137,7 +138,8 @@ public class ShootingGameController : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                ResetGame();
+                //ResetGame();
+                ReturnToMenu();
             }
         }
     }
@@ -810,5 +812,10 @@ public class ShootingGameController : MonoBehaviour
             spawnTimeSlots[i] = spawnTimeSlots[r];
             spawnTimeSlots[r] = tmp;
         }
+    }
+
+    void ReturnToMenu()
+    {
+        SceneManager.LoadScene("Title Scene");
     }
 }

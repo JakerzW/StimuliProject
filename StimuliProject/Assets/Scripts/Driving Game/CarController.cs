@@ -23,7 +23,7 @@ public class CarController : MonoBehaviour
     float directionSpacing = 18.5f;
     Vector3 turningSpeed = Vector3.zero;
     public float turningTime;
-    public float moveSpeed;
+    public float moveSpeed = 8;
 
     GameObject currentTrack;
     GameObject thisTrack;

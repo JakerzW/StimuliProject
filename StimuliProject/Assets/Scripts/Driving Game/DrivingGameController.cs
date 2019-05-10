@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class DrivingGameController : MonoBehaviour {
 
@@ -73,13 +74,10 @@ public class DrivingGameController : MonoBehaviour {
 
         if (currentState == GameState.end)
         {
-            gameOverText.enabled = true;
-            gameOverText.text = "Game Over";
-            timerText.enabled = false;
-
             if (Input.GetMouseButtonDown(0))
             {
-                ResetGame();
+                //ResetGame();
+                ReturnToMenu();
             }
         }
     }
@@ -108,6 +106,14 @@ public class DrivingGameController : MonoBehaviour {
             {
                 timerText.text = "Time: " + GetTimer((int)timer);
             }
+        }
+
+        if (currentState == GameState.end)
+        {
+            gameOverText.enabled = true;
+            gameOverText.text = "Game Over";
+            timerText.enabled = false;
+            directionText.enabled = false;
         }
     }
 
@@ -200,7 +206,7 @@ public class DrivingGameController : MonoBehaviour {
 
         currentCount = 3;
         currentState = GameState.start;
-        currentTime = 0.0f;
+        currentTime = 0.0f;        
 
         countdownText.enabled = true;
         timerText.enabled = false;
@@ -216,5 +222,10 @@ public class DrivingGameController : MonoBehaviour {
     public void SetDirectionActive(bool val)
     {
         directionText.enabled = val;
+    }
+
+    void ReturnToMenu()
+    {
+        SceneManager.LoadScene("Title Scene");
     }
 }

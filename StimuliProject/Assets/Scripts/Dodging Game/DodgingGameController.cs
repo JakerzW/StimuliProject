@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class DodgingGameController : MonoBehaviour
 {
@@ -84,7 +85,8 @@ public class DodgingGameController : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                ResetGame();
+                //ResetGame();
+                ReturnToMenu();
             }
         }
     }
@@ -344,5 +346,10 @@ public class DodgingGameController : MonoBehaviour
             spawnType[i] = spawnType[r];
             spawnType[r] = tmp;
         }
+    }
+
+    void ReturnToMenu()
+    {
+        SceneManager.LoadScene("Title Scene");
     }
 }
