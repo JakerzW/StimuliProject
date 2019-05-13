@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\DataController.cs" />
     <Compile Include="Assets\Scripts\Dodging Game\DodgingGameController.cs" />
     <Compile Include="Assets\Scripts\Dodging Game\MeteorController.cs" />
     <Compile Include="Assets\Scripts\Dodging Game\ShipController.cs" />

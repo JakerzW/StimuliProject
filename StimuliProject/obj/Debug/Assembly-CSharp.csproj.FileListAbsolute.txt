@@ -562,3 +562,5 @@ C:\Users\Jaker\Documents\University\3rd Year\Project\Project Application\Stimuli
 C:\Users\Jaker\Documents\University\3rd Year\Project\Project Application\StimuliProject\StimuliProject\obj\Debug\Assembly-CSharp.csproj.CopyComplete
 C:\Users\Jaker\Documents\University\3rd Year\Project\Project Application\StimuliProject\StimuliProject\obj\Debug\Assembly-CSharp.dll
 C:\Users\Jaker\Documents\University\3rd Year\Project\Project Application\StimuliProject\StimuliProject\obj\Debug\Assembly-CSharp.pdb
+D:\Documents\University\Year 3\Project\Project Application\StimuliProject\StimuliProject\Temp\bin\Debug\UnityEngine.SpatialTrackingModule.dll
+D:\Documents\University\Year 3\Project\Project Application\StimuliProject\StimuliProject\Temp\bin\Debug\UnityEngine.SpatialTrackingModule.xml

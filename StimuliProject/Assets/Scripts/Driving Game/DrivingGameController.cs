@@ -23,7 +23,7 @@ public class DrivingGameController : MonoBehaviour {
     public float timer;
 
     public Text countdownText, timerText, gameOverText, directionText;
-
+    
     // Use this for initialization
     void Start ()
     {
