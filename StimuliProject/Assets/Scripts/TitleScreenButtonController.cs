@@ -23,6 +23,7 @@ public class TitleScreenButtonController : MonoBehaviour
     private void Start()
     {
         idButtonsShowing = false;
+        LoadDropdownValues();
     }
 
     private void Update()
@@ -35,12 +36,7 @@ public class TitleScreenButtonController : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }	
 
-    public void ChooseID(int newId)
-    {
-        dataController.SetCurrentId(newId);
-    }
-
-    public void AddId()
+    public void AddNewId()
     {
         dataController.AddNewId();
         idButtonsShowing = false;
@@ -48,6 +44,8 @@ public class TitleScreenButtonController : MonoBehaviour
 
     public void ShowIDButtons()
     {
+        LoadDropdownValues();
+
         if (idButtonsShowing)
         {
             idButtonsShowing = false;
@@ -60,9 +58,25 @@ public class TitleScreenButtonController : MonoBehaviour
 
     void UpdateIdButtons()
     {
+        idButton.GetComponentInChildren<Text>().text = "ID: " + dataController.GetCurrentId();
+
         fadeImage.gameObject.SetActive(idButtonsShowing);
         chooseId.gameObject.SetActive(idButtonsShowing);
         addId.gameObject.SetActive(idButtonsShowing);
     }
     
+    void LoadDropdownValues()
+    {
+        chooseId.ClearOptions();
+        chooseId.AddOptions(dataController.GetAllIdStrings());
+        chooseId.captionText.text = "ID: " + dataController.GetCurrentId();
+    }
+
+    public void ChooseCurrentID()
+    {
+        dataController.SetCurrentId(chooseId.value);
+        idButton.GetComponentInChildren<Text>().text = "ID: " + chooseId.value;
+        //chooseId.Hide();
+        idButtonsShowing = false;
+    }
 }

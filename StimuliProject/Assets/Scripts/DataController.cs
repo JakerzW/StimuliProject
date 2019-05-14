@@ -34,17 +34,18 @@ public class DataController : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
         numOfIds = PlayerPrefs.GetInt("NumOfIds");
         for (int i = 0; i < numOfIds; i++)
         {
             AddId();
         }
         ReadJsonFiles();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
     }
 
     // Update is called once per frame
@@ -57,6 +58,17 @@ public class DataController : MonoBehaviour
     {
         return allIds;
     }
+
+    public List<string> GetAllIdStrings()
+    {
+        List<string> allIdStr = new List<string>();
+        for (int i = 0; i < allIds.Count; i++)
+        {
+            allIdStr.Add("ID: " + allIds[i].id.ToString());
+        }
+        return allIdStr;
+    }
+
     public int GetCurrentId()
     {
         return currentId;
@@ -79,7 +91,7 @@ public class DataController : MonoBehaviour
             PlayerPrefs.SetInt("NumOfIds", 1);
             IDInformation newId = new IDInformation(0);
             allIds.Add(newId);
-            currentId = 0;;
+            currentId = 0;
             AmmendJsonFile();
         }
 
@@ -88,7 +100,7 @@ public class DataController : MonoBehaviour
             PlayerPrefs.SetInt("NumOfIds", PlayerPrefs.GetInt("NumOfIds") + 1);
             IDInformation newId = new IDInformation(allIds[allIds.Count - 1].id + 1);
             allIds.Add(newId);
-            currentId = allIds[allIds.Count].id;
+            currentId = newId.id;
             AmmendJsonFile();
         }
     }
@@ -131,7 +143,7 @@ public class DataController : MonoBehaviour
     {
         for (int i = 0; i < allIds.Count; i++)
         {
-            string json = File.ReadAllText(Application.dataPath + "/ID Data/ID_" + allIds[i].id + ".json");
+            string json = File.ReadAllText(Application.dataPath + "/ID Data/ID_" + i + ".json");
             allIds[i] = JsonUtility.FromJson<IDInformation>(json);
         }
     }
