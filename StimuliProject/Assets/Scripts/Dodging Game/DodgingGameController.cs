@@ -41,6 +41,9 @@ public class DodgingGameController : MonoBehaviour
     List<float> listReactionTimes = new List<float>();
     List<Vector2> listTapPositions = new List<Vector2>();
 
+    //Meteor position existence values
+    bool upMeteorExists, rightMeteorExists, downMeteorExists, leftMeteorExists;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -73,12 +76,20 @@ public class DodgingGameController : MonoBehaviour
                 countdownText.enabled = false;
                 timerText.enabled = true;
                 currentState = GameState.spawn;
+                timeSpentPlayingDodging = 0;
             }
         }
 
         if (currentState == GameState.wait || currentState == GameState.spawn)
         {
+            //Decrement game timer
             timer -= Time.deltaTime;
+
+            //Increment reaction timer
+            currentReactionTime += Time.deltaTime;
+
+            //Increment game timer
+            timeSpentPlayingDodging += Time.deltaTime;
 
             if (timer <= 0 || currentSpawnType >= 32)
             {
@@ -97,6 +108,13 @@ public class DodgingGameController : MonoBehaviour
             else if (currentState == GameState.spawn)            
             {
                 CreateMeteors();
+
+                //Show warnings
+                Ship.GetComponent<ShipController>().ShowWarnings(upMeteorExists, rightMeteorExists, downMeteorExists, leftMeteorExists);
+
+                //Start rection timer
+                currentReactionTime = 0;
+
                 currentState = GameState.wait;
                 currentSpawnType++;
             }
@@ -155,6 +173,11 @@ public class DodgingGameController : MonoBehaviour
 
     void CreateMeteors()
     {
+        upMeteorExists = false;
+        rightMeteorExists = false;
+        downMeteorExists = false;
+        leftMeteorExists = false;
+
         Debug.Log("No. Meteors Spawned: " + spawnType[currentSpawnType]);
         switch (spawnType[currentSpawnType])
         {
@@ -275,21 +298,25 @@ public class DodgingGameController : MonoBehaviour
             case 1:
             {
                 meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Left");
+                leftMeteorExists = true;
                 break;
             }
             case 2:
             {
                 meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Right");
+                rightMeteorExists = true;
                 break;
             }
             case 3:
             {
                 meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Top");
+                upMeteorExists = true;
                 break;
             }
             case 4:
             {
                 meteor.GetComponent<MeteorController>().InitMeteorVals(new Vector2(Ship.transform.position.x, Ship.transform.position.y), "Bottom");
+                downMeteorExists = true;
                 break;
             }
         }
@@ -317,6 +344,16 @@ public class DodgingGameController : MonoBehaviour
         //Convert lists to arrays
         reactionTimesDodging = listReactionTimes.ToArray();
         tapPositionsDodging = listTapPositions.ToArray();
+    }
+
+    public void AddReactionTime()
+    {
+        listReactionTimes.Add(currentReactionTime);
+    }
+
+    public void AddReactionPosition(Vector2 tapPos)
+    {
+        listTapPositions.Add(tapPos);
     }
 
     public void SetGameState(GameState newState)

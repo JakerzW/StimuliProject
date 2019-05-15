@@ -72,14 +72,18 @@
     <Compile Include="Assets\Scripts\Shooting Game\ShootingPlayerController.cs" />
     <Compile Include="Assets\Scripts\Shooting Game\ShootingTargetController.cs" />
     <Compile Include="Assets\Scripts\TitleScreenButtonController.cs" />
+    <None Include="Assets\Kenney\Game icons (100 assets)\Spritesheet\sheet_black2x.xml" />
+    <None Include="Assets\Kenney\Game icons (100 assets)\Spritesheet\sheet_black1x.xml" />
     <None Include="Assets\Kenney\Shooting Gallery (110 assets)\Spritesheets\spritesheet_hud.xml" />
     <None Include="Assets\Kenney\Shooting Gallery (110 assets)\Spritesheets\spritesheet_stall.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_characters.xml" />
+    <None Include="Assets\Kenney\Game icons (100 assets)\Spritesheet\sheet_white2x.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_objects.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_vehicles.xml" />
     <None Include="Assets\Kenney\Space shooter assets (300 assets)\Spritesheet\sheet.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_tiles.xml" />
     <None Include="Assets\Kenney\Shooting Gallery (110 assets)\Spritesheets\spritesheet_objects.xml" />
+    <None Include="Assets\Kenney\Game icons (100 assets)\Spritesheet\sheet_white1x.xml" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/Documents/University/Year 3/Project/Project Application/StimuliProject/StimuliProject/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
