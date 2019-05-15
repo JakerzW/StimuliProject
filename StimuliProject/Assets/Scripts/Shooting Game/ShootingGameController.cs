@@ -55,6 +55,25 @@ public class ShootingGameController : MonoBehaviour
 
     int[] spawnTimeSlots = new int[] {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3};
 
+    //The data controller reference
+    public GameObject dataController;
+
+    //The game ID
+    DataController.GameID gameID = DataController.GameID.shoot;
+
+    //Current game variables
+    float averageTimeShooting;
+    float bestTimeShooting;
+    float worstTimeShooting;
+    float[] reactionTimesShooting;
+    Vector2[] tapPositionsShooting;
+    float timeSpentPlayingShooting;
+
+    //This current reaction timer
+    float currentReactionTime;
+    List<float> listReactionTimes = new List<float>();
+    List<Vector2> listTapPositions = new List<Vector2>();
+
     void Awake()
     {
         Screen.orientation = ScreenOrientation.Landscape;
@@ -75,6 +94,8 @@ public class ShootingGameController : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+        dataController = GameObject.FindGameObjectWithTag("DataController");
+
         countdownText.text = currentCount.ToString();
     }
 	
@@ -103,12 +124,22 @@ public class ShootingGameController : MonoBehaviour
                 scoreText.enabled = true;
 				timerText.enabled = true;
 				currentState = GameState.spawn;
+
+                //Start game timer
+                timeSpentPlayingShooting = 0;
             }         
         }
 
         if (currentState == GameState.wait || currentState == GameState.spawn)
         {
+            //Decrement game timer
 			timer -= Time.deltaTime;
+
+            //Increment reaction timer
+            currentReactionTime += Time.deltaTime;
+
+            //Increment game timer
+            timeSpentPlayingShooting += Time.deltaTime;
 
             if (timer <= 0 || targetsHit >= 30)
             {
@@ -123,18 +154,19 @@ public class ShootingGameController : MonoBehaviour
 
         if (currentState == GameState.end)
         {
+            //End game timer
+
             GameObject[] targets = GameObject.FindGameObjectsWithTag("Target");
             for (int i = 0; i < targets.Length; i++)
             {
                 Destroy(targets[i]);
             }
 
-            gameOverText.enabled = true;
-            gameOverText.text = "Game Over";
-            finalScoreText.enabled = true;
-            finalScoreText.text = "Your score: " + score;
-            scoreText.enabled = false;
-            timerText.enabled = false;
+            //Calculate data
+            CalculateIdData();            
+
+            //Store data
+            dataController.GetComponent<DataController>().UpdateIdInfo(gameID, averageTimeShooting, bestTimeShooting, worstTimeShooting, reactionTimesShooting, tapPositionsShooting, timeSpentPlayingShooting);
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -176,12 +208,28 @@ public class ShootingGameController : MonoBehaviour
 			{
 				timerText.text = "Time: " + GetTimer((int)timer);
 			}
-        }        
+        }
+
+        if (currentState == GameState.end)
+        {
+            gameOverText.enabled = true;
+            gameOverText.text = "Game Over";
+            finalScoreText.enabled = true;
+            finalScoreText.text = "Your score: " + score;
+            scoreText.enabled = false;
+            timerText.enabled = false;
+        }
     }
 
 	//Called when a target has been hit to reset targets
 	public void TargetHit(GameObject hitTarget, int position)
 	{
+        //Store reaction time
+        listReactionTimes.Add(currentReactionTime);
+
+        //Store position of click using hitTarget
+        listTapPositions.Add(hitTarget.transform.position);
+        
         //Update the current state of the game
 		currentState = GameState.spawn;
 
@@ -220,9 +268,7 @@ public class ShootingGameController : MonoBehaviour
             targets[i].GetComponent<CircleCollider2D>().enabled = false;
 			targets[i].GetComponent<ShootingTargetController>().Hit(false);
 		}
-
-		//Set player reaction timer to 0 and record time
-
+        
         //Update the state of the targets
 		UpdateTargets();
 	}
@@ -465,6 +511,34 @@ public class ShootingGameController : MonoBehaviour
                 }
             }
         }
+
+        //Set reaction time to zero
+        currentReactionTime = 0f;
+    }
+
+    void CalculateIdData()
+    {
+        //Check if reaction time was best or worst
+        for (int i = 0; i < listReactionTimes.Count; i++)
+        {
+            if (listReactionTimes[i] > worstTimeShooting)
+            {
+                worstTimeShooting = listReactionTimes[i];
+            }
+            else if (listReactionTimes[i] < bestTimeShooting || i == 0)
+            {
+                bestTimeShooting = listReactionTimes[i];
+            }
+
+            averageTimeShooting += listReactionTimes[i];
+        }
+
+        //Calculate the new average time
+        averageTimeShooting /= listReactionTimes.Count;
+
+        //Convert lists to arrays
+        reactionTimesShooting = listReactionTimes.ToArray();
+        tapPositionsShooting = listTapPositions.ToArray();
     }
 
     void InstantiateTarget(Locations[] array, int pos)
@@ -671,6 +745,13 @@ public class ShootingGameController : MonoBehaviour
         singleSpawns = 18;
         doubleSpawns = 6;
         tripleSpawns = 6;
+
+        averageTimeShooting = 0f;
+        bestTimeShooting = 0f;
+        worstTimeShooting = 0f;
+        reactionTimesShooting = null;
+        tapPositionsShooting = null;
+        timeSpentPlayingShooting = 0f;
 
         ClearLocations(singleLocations);
 

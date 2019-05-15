@@ -23,10 +23,31 @@ public class DrivingGameController : MonoBehaviour {
     public float timer;
 
     public Text countdownText, timerText, gameOverText, directionText;
-    
+
+    //The data controller reference
+    public GameObject dataController;
+
+    //The game ID
+    DataController.GameID gameID = DataController.GameID.drive;
+
+    //Current game variables
+    float averageTimeDriving;
+    float bestTimeDriving;
+    float worstTimeDriving;
+    float[] reactionTimesDriving;
+    Vector2[] tapPositionsDriving;
+    float timeSpentPlayingDriving;
+
+    //This current reaction timer
+    float currentReactionTime;
+    List<float> listReactionTimes = new List<float>();
+    List<Vector2> listTapPositions = new List<Vector2>();
+
     // Use this for initialization
     void Start ()
     {
+        dataController = GameObject.FindGameObjectWithTag("DataController");
+
         ResetGame();
 	}
 	
@@ -54,12 +75,20 @@ public class DrivingGameController : MonoBehaviour {
                 countdownText.enabled = false;
                 timerText.enabled = true;
                 currentState = GameState.play;
+                timeSpentPlayingDriving = 0;
             }
         }
 
         if (currentState == GameState.play)
         {
+            //Decrement game timer
             timer -= Time.deltaTime;
+
+            //Increment reaction time timer
+            currentReactionTime += Time.deltaTime;
+
+            //Increment time played timer
+            timeSpentPlayingDriving += Time.deltaTime;
 
             if (timer <= 0)
             {
@@ -74,6 +103,12 @@ public class DrivingGameController : MonoBehaviour {
 
         if (currentState == GameState.end)
         {
+            //Calculate data
+            CalculateIdData();
+
+            //Store data
+            dataController.GetComponent<DataController>().UpdateIdInfo(gameID, averageTimeDriving, bestTimeDriving, worstTimeDriving, reactionTimesDriving, tapPositionsDriving, timeSpentPlayingDriving);
+
             if (Input.GetMouseButtonDown(0))
             {
                 //ResetGame();
@@ -135,6 +170,49 @@ public class DrivingGameController : MonoBehaviour {
 
             currentSegment++;
         }
+    }
+
+    void CalculateIdData()
+    {
+        for (int i = 0; i < listReactionTimes.Count; i++)
+        {
+            if (listReactionTimes[i] > worstTimeDriving)
+            {
+                worstTimeDriving = listReactionTimes[i];
+            }
+            else if (listReactionTimes[i] < bestTimeDriving || i == 0)
+            {
+                bestTimeDriving = listReactionTimes[i];
+            }
+
+            averageTimeDriving += listReactionTimes[i];
+        }
+
+        //Calculate the new average time
+        averageTimeDriving /= listReactionTimes.Count;
+
+        //Convert lists to arrays
+        reactionTimesDriving = listReactionTimes.ToArray();
+        tapPositionsDriving = listTapPositions.ToArray();
+    }
+
+    public void SetCurrentReactionTimeValue(bool reactionHasHappened)
+    {
+        if (!reactionHasHappened)
+        {
+            //Reset reaction time
+            currentReactionTime = 0;
+        }
+        else
+        {
+            //Store reaction time
+            listReactionTimes.Add(currentReactionTime);
+        }
+    }
+
+    public void AddTapPositionToList(Vector2 newPos)
+    {
+        listTapPositions.Add(newPos);
     }
 
     void RandomiseSpawnTimes()

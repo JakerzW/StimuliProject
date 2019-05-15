@@ -15,21 +15,36 @@ public class DataController : MonoBehaviour
         public IDInformation() { }
 
         public int id;
+
         public float averageTimeShooting;
         public float bestTimeShooting;
         public float worstTimeShooting;
+        public float[] reactionTimesShooting;
+        public Vector2[] tapPositionsShooting;
+        public float timeSpentPlayingShooting;
+
         public float averageTimeDriving;
         public float bestTimeDriving;
         public float worstTimeDriving;
+        public float[] reactionTimesDriving;
+        public Vector2[] tapPositionsDriving;
+        public float timeSpentPlayingDriving;
+
         public float averageTimeDodging;
         public float bestTimeDodging;
         public float worstTimeDodging;
+        public float[] reactionTimesDodging;
+        public Vector2[] tapPositionsDodging;
+        public float timeSpentPlayingDodging;
     }
 
     List<IDInformation> allIds = new List<IDInformation>();
 
     int numOfIds;
     int currentId;
+
+    public enum GameID { shoot, drive, dodge };
+    public GameID currentGame;
 
     private void Awake()
     {
@@ -39,7 +54,7 @@ public class DataController : MonoBehaviour
         {
             AddId();
         }
-        ReadJsonFiles();
+        Load();
     }
 
     // Start is called before the first frame update
@@ -92,7 +107,7 @@ public class DataController : MonoBehaviour
             IDInformation newId = new IDInformation(0);
             allIds.Add(newId);
             currentId = 0;
-            AmmendJsonFile();
+            Save();
         }
 
         else
@@ -101,45 +116,52 @@ public class DataController : MonoBehaviour
             IDInformation newId = new IDInformation(allIds[allIds.Count - 1].id + 1);
             allIds.Add(newId);
             currentId = newId.id;
-            AmmendJsonFile();
+            Save();
         }
     }
 
-    public void UpdateIdInfo(string game, int av, int best, int worst)
+    public void UpdateIdInfo(GameID game, float av, float best, float worst, float[] times, Vector2[] positions, float playTime)
     {
         switch (game)
         {
-            case "Shooting":
+            case GameID.shoot:
             {
                 allIds[currentId].averageTimeShooting = av;
                 allIds[currentId].bestTimeShooting = best;
                 allIds[currentId].worstTimeShooting = worst;
+                allIds[currentId].reactionTimesShooting = times;
+                allIds[currentId].tapPositionsShooting = positions;
+                allIds[currentId].timeSpentPlayingShooting = playTime;
                 break;
             }
-            case "Driving":
+            case GameID.drive:
             {
                 allIds[currentId].averageTimeDriving = av;
                 allIds[currentId].bestTimeDriving = best;
                 allIds[currentId].worstTimeDriving = worst;
+                allIds[currentId].reactionTimesDriving = times;
+                allIds[currentId].tapPositionsDriving = positions;
+                allIds[currentId].timeSpentPlayingDriving = playTime;
                 break;
             }
-            case "Dodging":
+            case GameID.dodge:
             {
                 allIds[currentId].averageTimeDodging = av;
                 allIds[currentId].bestTimeDodging = best;
                 allIds[currentId].worstTimeDodging = worst;
+                allIds[currentId].reactionTimesDodging = times;
+                allIds[currentId].tapPositionsDodging = positions;
+                allIds[currentId].timeSpentPlayingDodging = playTime;
                 break;
             }
             default:
-            {
                 break;
-            }
         }
 
-        AmmendJsonFile();
+        Save();
     }
 
-    public void ReadJsonFiles()
+    public void Load()
     {
         for (int i = 0; i < allIds.Count; i++)
         {
@@ -148,7 +170,7 @@ public class DataController : MonoBehaviour
         }
     }
 
-    public void AmmendJsonFile()
+    public void Save()
     {
         string json = JsonUtility.ToJson(allIds[currentId]);
         File.WriteAllText(Application.dataPath + "/ID Data/ID_" + allIds[currentId].id + ".json", json);

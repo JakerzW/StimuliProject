@@ -43,7 +43,12 @@ public class CarController : MonoBehaviour
             if (inputAllowed)
             {
                 //Calculate input time
-                
+                GameController.GetComponent<DrivingGameController>().SetCurrentReactionTimeValue(true);
+
+                //Add tap position to list
+                GameController.GetComponent<DrivingGameController>().AddTapPositionToList(Input.mousePosition);
+
+                //Hide the direction
                 GameController.GetComponent<DrivingGameController>().SetDirectionActive(false);
                 directionHasBeenDisplayed = false;
 
@@ -160,6 +165,7 @@ public class CarController : MonoBehaviour
             GameController.GetComponent<DrivingGameController>().SetDirectionActive(true);
 
             //Start timer between now and input from user
+            GameController.GetComponent<DrivingGameController>().SetCurrentReactionTimeValue(false);
         }
 
         if (carIsMoving)

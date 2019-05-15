@@ -20,11 +20,32 @@ public class DodgingGameController : MonoBehaviour
     public GameObject meteor1, meteor2, meteor3, meteor4;
     
     int[] spawnType = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3 };
-    int currentSpawnType;    
+    int currentSpawnType;
+
+    //The data controller reference
+    public GameObject dataController;
+
+    //The game ID
+    DataController.GameID gameID = DataController.GameID.dodge;
+
+    //Current game variables
+    float averageTimeDodging;
+    float bestTimeDodging;
+    float worstTimeDodging;
+    float[] reactionTimesDodging;
+    Vector2[] tapPositionsDodging;
+    float timeSpentPlayingDodging;
+
+    //This current reaction timer
+    float currentReactionTime;
+    List<float> listReactionTimes = new List<float>();
+    List<Vector2> listTapPositions = new List<Vector2>();
 
     // Start is called before the first frame update
     void Start()
     {
+        dataController = GameObject.FindGameObjectWithTag("DataController");
+
         ResetGame();
     }
 
@@ -83,6 +104,12 @@ public class DodgingGameController : MonoBehaviour
 
         if (currentState == GameState.end)
         {
+            //Calculate data
+            CalculateIdData();
+
+            //Store data
+            dataController.GetComponent<DataController>().UpdateIdInfo(gameID, averageTimeDodging, bestTimeDodging, worstTimeDodging, reactionTimesDodging, tapPositionsDodging, timeSpentPlayingDodging);
+
             if (Input.GetMouseButtonDown(0))
             {
                 //ResetGame();
@@ -266,6 +293,30 @@ public class DodgingGameController : MonoBehaviour
                 break;
             }
         }
+    }
+
+    void CalculateIdData()
+    {
+        for (int i = 0; i < listReactionTimes.Count; i++)
+        {
+            if (listReactionTimes[i] > worstTimeDodging)
+            {
+                worstTimeDodging = listReactionTimes[i];
+            }
+            else if (listReactionTimes[i] < bestTimeDodging || i == 0)
+            {
+                bestTimeDodging = listReactionTimes[i];
+            }
+
+            averageTimeDodging += listReactionTimes[i];
+        }
+
+        //Calculate the new average time
+        averageTimeDodging /= listReactionTimes.Count;
+
+        //Convert lists to arrays
+        reactionTimesDodging = listReactionTimes.ToArray();
+        tapPositionsDodging = listTapPositions.ToArray();
     }
 
     public void SetGameState(GameState newState)
