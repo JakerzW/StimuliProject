@@ -8,7 +8,7 @@ public class TitleScreenButtonController : MonoBehaviour
 {
     public int[] Ids;
 
-    public DataController dataController;
+    public GameObject dataController;
 
     public Image fadeImage;
     public Dropdown chooseId;
@@ -22,6 +22,8 @@ public class TitleScreenButtonController : MonoBehaviour
 
     private void Start()
     {
+        dataController = GameObject.FindGameObjectWithTag("DataController");
+
         idButtonsShowing = false;
         LoadDropdownValues();
     }
@@ -38,7 +40,7 @@ public class TitleScreenButtonController : MonoBehaviour
 
     public void AddNewId()
     {
-        dataController.AddNewId();
+        dataController.GetComponent<DataController>().AddNewId();
         idButtonsShowing = false;
     }
 
@@ -58,7 +60,7 @@ public class TitleScreenButtonController : MonoBehaviour
 
     void UpdateIdButtons()
     {
-        idButton.GetComponentInChildren<Text>().text = "ID: " + dataController.GetCurrentId();
+        idButton.GetComponentInChildren<Text>().text = "ID: " + dataController.GetComponent<DataController>().GetCurrentId();
 
         fadeImage.gameObject.SetActive(idButtonsShowing);
         chooseId.gameObject.SetActive(idButtonsShowing);
@@ -68,15 +70,15 @@ public class TitleScreenButtonController : MonoBehaviour
     void LoadDropdownValues()
     {
         chooseId.ClearOptions();
-        chooseId.AddOptions(dataController.GetAllIdStrings());
-        chooseId.captionText.text = "ID: " + dataController.GetCurrentId();
+        chooseId.AddOptions(dataController.GetComponent<DataController>().GetAllIdStrings());
+        chooseId.captionText.text = "ID: " + dataController.GetComponent<DataController>().GetCurrentId();
     }
 
     public void ChooseCurrentID()
     {
-        dataController.SetCurrentId(chooseId.value);
+        dataController.GetComponent<DataController>().SetCurrentId(chooseId.value);
         idButton.GetComponentInChildren<Text>().text = "ID: " + chooseId.value;
-        //chooseId.Hide();
+        chooseId.Hide();
         idButtonsShowing = false;
     }
 }

@@ -4,50 +4,23 @@ using UnityEngine;
 using System.IO;
 
 public class DataController : MonoBehaviour
-{
-    public class IDInformation
-    {
-        public IDInformation(int newId)
-        {
-            id = newId;
-        }
-
-        public IDInformation() { }
-
-        public int id;
-
-        public float averageTimeShooting;
-        public float bestTimeShooting;
-        public float worstTimeShooting;
-        public float[] reactionTimesShooting;
-        public Vector2[] tapPositionsShooting;
-        public float timeSpentPlayingShooting;
-
-        public float averageTimeDriving;
-        public float bestTimeDriving;
-        public float worstTimeDriving;
-        public float[] reactionTimesDriving;
-        public Vector2[] tapPositionsDriving;
-        public float timeSpentPlayingDriving;
-
-        public float averageTimeDodging;
-        public float bestTimeDodging;
-        public float worstTimeDodging;
-        public float[] reactionTimesDodging;
-        public Vector2[] tapPositionsDodging;
-        public float timeSpentPlayingDodging;
-    }
-
+{ 
     List<IDInformation> allIds = new List<IDInformation>();
 
     int numOfIds;
-    int currentId;
+    public int currentId;
 
     public enum GameID { shoot, drive, dodge };
-    public GameID currentGame;
 
     private void Awake()
     {
+        GameObject[] objs = GameObject.FindGameObjectsWithTag("DataController");
+
+        if (objs.Length > 1)
+        {
+            Destroy(gameObject);
+        }
+
         DontDestroyOnLoad(gameObject);
         numOfIds = PlayerPrefs.GetInt("NumOfIds");
         for (int i = 0; i < numOfIds; i++)
@@ -165,16 +138,38 @@ public class DataController : MonoBehaviour
     {
         for (int i = 0; i < allIds.Count; i++)
         {
-            string json = File.ReadAllText(Application.dataPath + "/ID Data/ID_" + i + ".json");
+            string filePath = Path.Combine(Application.persistentDataPath, "ID_" + i + ".json");
+            string json = File.ReadAllText(filePath);
             allIds[i] = JsonUtility.FromJson<IDInformation>(json);
-        }
+
+
+
+            //if (PlayerPrefs.HasKey("ID_" + i))
+            //{
+            //    allIds[i] = Helper.Deserialise<IDInformation>(PlayerPrefs.GetString("ID_" + i));
+            //    Debug.Log(allIds[i]);
+            //}
+            //else
+            //{
+            //    Save();
+            //}
+
+        }        
     }
 
     public void Save()
     {
+        string filePath = Path.Combine(Application.persistentDataPath, "ID_" + allIds[currentId].id + ".json");
         string json = JsonUtility.ToJson(allIds[currentId]);
-        File.WriteAllText(Application.dataPath + "/ID Data/ID_" + allIds[currentId].id + ".json", json);
-        Debug.Log("Writing json file.");
-        Debug.Log(allIds[currentId].id);
+        File.WriteAllText(filePath, json);
+        Debug.Log("Saving to json file.");
+
+        //PlayerPrefs.SetString("ID_" + allIds[currentId].id, Helper.Serialise<IDInformation>(allIds[currentId]));
     }
+
+    public void ClearAllData()
+    {
+        Directory.Delete(Application.dataPath + "/ID Data/");
+        PlayerPrefs.DeleteAll();
+    }    
 }

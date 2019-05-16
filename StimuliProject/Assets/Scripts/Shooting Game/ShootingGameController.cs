@@ -521,13 +521,13 @@ public class ShootingGameController : MonoBehaviour
         //Check if reaction time was best or worst
         for (int i = 0; i < listReactionTimes.Count; i++)
         {
+            if (listReactionTimes[i] < bestTimeShooting || i == 0)
+            {
+                bestTimeShooting = listReactionTimes[i];
+            }
             if (listReactionTimes[i] > worstTimeShooting)
             {
                 worstTimeShooting = listReactionTimes[i];
-            }
-            else if (listReactionTimes[i] < bestTimeShooting || i == 0)
-            {
-                bestTimeShooting = listReactionTimes[i];
             }
 
             averageTimeShooting += listReactionTimes[i];

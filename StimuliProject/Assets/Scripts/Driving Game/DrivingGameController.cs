@@ -176,13 +176,13 @@ public class DrivingGameController : MonoBehaviour {
     {
         for (int i = 0; i < listReactionTimes.Count; i++)
         {
+            if (listReactionTimes[i] < bestTimeDriving || i == 0)
+            {
+                bestTimeDriving = listReactionTimes[i];
+            }
             if (listReactionTimes[i] > worstTimeDriving)
             {
                 worstTimeDriving = listReactionTimes[i];
-            }
-            else if (listReactionTimes[i] < bestTimeDriving || i == 0)
-            {
-                bestTimeDriving = listReactionTimes[i];
             }
 
             averageTimeDriving += listReactionTimes[i];

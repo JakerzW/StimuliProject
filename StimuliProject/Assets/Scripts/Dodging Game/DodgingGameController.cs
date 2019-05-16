@@ -330,7 +330,7 @@ public class DodgingGameController : MonoBehaviour
             {
                 worstTimeDodging = listReactionTimes[i];
             }
-            else if (listReactionTimes[i] < bestTimeDodging || i == 0)
+            if (listReactionTimes[i] < bestTimeDodging || i == 0)
             {
                 bestTimeDodging = listReactionTimes[i];
             }
