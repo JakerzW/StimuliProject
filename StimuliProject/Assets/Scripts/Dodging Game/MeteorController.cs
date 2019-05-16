@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class MeteorController : MonoBehaviour
 {
+    //Define the meteor variables
     public GameObject HUD;
     DodgingGameController.GameState currentState;
-
     int velocity = 20;
     Vector2 movementDirection;
-
     Rigidbody2D rb;
 
+    //A struct defining the meteor initial values
     public struct MeteorInitVals
     {
         public MeteorInitVals(Vector2 sp, Vector2 md)
@@ -24,6 +24,7 @@ public class MeteorController : MonoBehaviour
         public Vector2 movementDir;
     }
 
+    //The initial values defined
     MeteorInitVals left = new MeteorInitVals(new Vector2(-75f, 0f), new Vector2(1f, 0f));
     MeteorInitVals right = new MeteorInitVals(new Vector2(75f, 0f), new Vector2(-1f, 0f));
     MeteorInitVals top = new MeteorInitVals(new Vector2(0f, 50f), new Vector2(0f, -1f));
@@ -49,6 +50,7 @@ public class MeteorController : MonoBehaviour
         }
     }
 
+    //Check for meteor collision
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Meteor"))
@@ -58,23 +60,27 @@ public class MeteorController : MonoBehaviour
         }
     }
 
+    //Check if the meteor has left the game area
     private void OnTriggerExit2D(Collider2D collision)
     {
         Debug.Log("Meteor has left BG box.");
         Destroy(gameObject);
     }
 
+    //Assign the meteor values
     void AssignMeteorValues(Vector2 startPos, Vector2 movementDir)
     {
         gameObject.transform.position = startPos;
         movementDirection = movementDir;
     }
 
+    //Move the meteor
     void MoveMeteor()
     {
         rb.velocity = movementDirection * velocity;
     }
 
+    //Init the meteor values
     public void InitMeteorVals(Vector2 shipPos, string startPos)
     {
         switch (startPos)

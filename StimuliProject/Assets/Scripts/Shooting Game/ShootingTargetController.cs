@@ -4,23 +4,12 @@ using UnityEngine;
 
 public class ShootingTargetController : MonoBehaviour
 {
-    
+    //Target variables defined
 	public float fadeTime = 1.0f;
 	public SpriteRenderer targetRenderer;
     public int position;
 
-	// Use this for initialization
-	void Start() 
-	{
-
-	}
-	
-	// Update is called once per frame
-	void Update() 
-	{
-		
-	}
-
+    //If the target is hit, destroy or fade out
 	public void Hit(bool hit)
 	{
 		if (hit) 
@@ -34,21 +23,21 @@ public class ShootingTargetController : MonoBehaviour
         }
 	}
 
+    //Fade out function
     public IEnumerator FadeOut()
     {
         float start = Time.time;
-        //Debug.Log("Fading...");
         while (Time.time <= start + fadeTime)
         {
             Color newColor = targetRenderer.color;
             newColor.a = 1f - Mathf.Clamp01((Time.time - start) / fadeTime);
-            //Debug.Log("Fade: " + newColor.a);
             targetRenderer.color = newColor;
             yield return new WaitForEndOfFrame();
         }
         Destroy(this.gameObject);
     }
 
+    //Update the targets position
     public void UpdatePosition(int newPos)
     {
         position = newPos;

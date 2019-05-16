@@ -4,33 +4,35 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
+    //GameObjects defined
     public GameObject GameController;
     public GameObject Track;
+    GameObject currentTrack;
+    GameObject thisTrack;
 
+    //Car variables defined
     bool inputAllowed;
     bool inputMade;
     bool leftWasPressed;
     bool chosenDirectionIsCorrect;
     bool directionHasBeenDisplayed;
     bool carIsMoving;
+    float directionSpacing = 18.5f;
+    Vector3 turningSpeed = Vector3.zero;
+    public float turningTime;
+    public float moveSpeed = 8;
 
+    //Game state variables defined
     public enum Direction { left, right, split };
     public Direction nextDirection;
     Direction currentDirection;
     public enum Position { left, middle, right};
     public Position currentPosition;
 
-    float directionSpacing = 18.5f;
-    Vector3 turningSpeed = Vector3.zero;
-    public float turningTime;
-    public float moveSpeed = 8;
-
-    GameObject currentTrack;
-    GameObject thisTrack;
-
     // Start is called before the first frame update
     void Start()
     {
+        currentPosition = Position.middle;
         inputAllowed = false;
         directionHasBeenDisplayed = false;
     }
@@ -52,6 +54,7 @@ public class CarController : MonoBehaviour
                 GameController.GetComponent<DrivingGameController>().SetDirectionActive(false);
                 directionHasBeenDisplayed = false;
 
+                //Check side of click
                 if (Input.mousePosition.x > (Screen.width / 2))
                 {
                     leftWasPressed = false;
@@ -62,6 +65,8 @@ public class CarController : MonoBehaviour
                 }
 
                 CheckInput(leftWasPressed);
+                
+                Handheld.Vibrate();
             }
         }
 
@@ -69,6 +74,7 @@ public class CarController : MonoBehaviour
         //If trigger activated and input is made, move the car
     }
 
+    //Move the car if triggered
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (inputMade)
@@ -83,11 +89,13 @@ public class CarController : MonoBehaviour
         }
     }
 
+    //Set the allow input value
     public void AllowInput(bool value)
     {
         inputAllowed = value;
     }
 
+    //Update the next direction value
     public void UpdateDiection(string newDir)
     {
         switch (newDir)
@@ -110,6 +118,7 @@ public class CarController : MonoBehaviour
         }
     }
 
+    //Update the car values
     void UpdateCar()
     {
         currentTrack = Track.GetComponent<TrackController>().GetNextTrack();
@@ -174,6 +183,7 @@ public class CarController : MonoBehaviour
         }
     }
 
+    //Check the input value
     void CheckInput(bool leftWasPressed)
     {
         switch (currentDirection)
@@ -272,14 +282,13 @@ public class CarController : MonoBehaviour
                         }
                         break;
                     }
-                }
-
-                
+                }                
             }
         }
         inputMade = true;
     }
 
+    //Move the car if click was made
     void MoveCar()
     {
         //End game if movement is wrong
@@ -308,9 +317,7 @@ public class CarController : MonoBehaviour
                     {
                         carIsMoving = false;
                     }
-                }
-                
-
+                }  
             }
             else
             {
@@ -331,9 +338,7 @@ public class CarController : MonoBehaviour
                     {
                         carIsMoving = false;
                     }
-                }
-                
-
+                }  
             }
         }        
     }

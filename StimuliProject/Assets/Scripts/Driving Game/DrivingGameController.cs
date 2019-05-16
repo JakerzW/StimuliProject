@@ -117,6 +117,7 @@ public class DrivingGameController : MonoBehaviour {
         }
     }
 
+    //Update the GUI
     void OnGUI()
     {
         if (currentState == GameState.start)
@@ -152,19 +153,16 @@ public class DrivingGameController : MonoBehaviour {
         }
     }
 
+    //Check for a direction change
     void CheckForDirectionChange()
     {
         changesSinceLastSeg = Track.GetComponent<TrackController>().GetChangesSinceLastSeg();
         if (currentSegment < 15 && changesSinceLastSeg >= spawnLengths[currentSegment])
         {
             //Change the road segment using ChangeDirection() and giving road type variables
-            //using randomly generated direction (array similar to time segments)
+            //using randomly generated direction
 
             Track.GetComponent<TrackController>().ChangeDirection(directionTypes[currentSegment]);
- 
-            //Notify player about direction change
-            //Allow input for the car as soon as stimuli is shown
-            //Once input is detected, block any other inputs
 
             Car.GetComponent<CarController>().UpdateDiection(directionTypes[currentSegment]);
 
@@ -172,6 +170,7 @@ public class DrivingGameController : MonoBehaviour {
         }
     }
 
+    //Calculate the data relative to the id and store it
     void CalculateIdData()
     {
         for (int i = 0; i < listReactionTimes.Count; i++)
@@ -196,6 +195,7 @@ public class DrivingGameController : MonoBehaviour {
         tapPositionsDriving = listTapPositions.ToArray();
     }
 
+    //Set the current reaction time value
     public void SetCurrentReactionTimeValue(bool reactionHasHappened)
     {
         if (!reactionHasHappened)
@@ -210,11 +210,13 @@ public class DrivingGameController : MonoBehaviour {
         }
     }
 
+    //Add the most recent tap position to the id list
     public void AddTapPositionToList(Vector2 newPos)
     {
         listTapPositions.Add(newPos);
     }
 
+    //Randomise the spawn times
     void RandomiseSpawnTimes()
     {
         for (int i = 0; i < spawnLengths.Length; i++)
@@ -226,6 +228,7 @@ public class DrivingGameController : MonoBehaviour {
         }
     }
 
+    //Randomise the direction array
     void RandomiseDirections()
     {
         for (int i = 0; i < directionTypes.Length; i++)
@@ -237,6 +240,7 @@ public class DrivingGameController : MonoBehaviour {
         }
     }
 
+    //Get the current timer value
     string GetTimer(int s)
     {
         int mins;
@@ -267,16 +271,19 @@ public class DrivingGameController : MonoBehaviour {
         return minsStr + ":" + secsStr;
     }
 
+    //Get the current game state
     public GameState GetGameState()
     {
         return currentState;
     }
 
+    //Set the game state
     public void SetGameState(GameState newState)
     {
         currentState = newState; 
     }
 
+    //Reset the game variables
     void ResetGame()
     {
         RandomiseSpawnTimes();
@@ -292,16 +299,19 @@ public class DrivingGameController : MonoBehaviour {
         directionText.enabled = false;
     }
 
+    //Display the next direction
     public void DisplayDirection(string dir)
     {
         directionText.text = dir;
     }
 
+    //Set the direction stimuli as active
     public void SetDirectionActive(bool val)
     {
         directionText.enabled = val;
     }
 
+    //Return to menu
     void ReturnToMenu()
     {
         SceneManager.LoadScene("Title Scene");

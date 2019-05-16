@@ -11,14 +11,18 @@ public class DodgingGameController : MonoBehaviour
     int currentCount;
     public float timer;
 
+    //Game state variables defined
     public enum GameState { start, spawn, wait, end };
     GameState currentState;
 
+    //Text objects defined
     public Text countdownText, timerText, gameOverText;
 
+    //GameObjects defined
     public GameObject Ship;
     public GameObject meteor1, meteor2, meteor3, meteor4;
     
+    //Define the spawn type array
     int[] spawnType = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3 };
     int currentSpawnType;
 
@@ -136,6 +140,7 @@ public class DodgingGameController : MonoBehaviour
         }
     }
 
+    //Update the GUI
     void OnGUI()
     {
         if (currentState == GameState.start)
@@ -171,6 +176,7 @@ public class DodgingGameController : MonoBehaviour
         }
     }
 
+    //Create the meteors
     void CreateMeteors()
     {
         upMeteorExists = false;
@@ -259,6 +265,7 @@ public class DodgingGameController : MonoBehaviour
         }        
     }
 
+    //Set the type of meteor
     GameObject SetTypeOfMeteor(int type)
     {
         switch (type)
@@ -291,6 +298,7 @@ public class DodgingGameController : MonoBehaviour
         }
     }
 
+    //Set the position of the meteor
     void SetPosOfMeteor(GameObject meteor, int pos)
     {
         switch (pos)
@@ -322,6 +330,7 @@ public class DodgingGameController : MonoBehaviour
         }
     }
 
+    //Calculate the ID data to be stored
     void CalculateIdData()
     {
         for (int i = 0; i < listReactionTimes.Count; i++)
@@ -346,26 +355,31 @@ public class DodgingGameController : MonoBehaviour
         tapPositionsDodging = listTapPositions.ToArray();
     }
 
+    //Add the reaction time to the list
     public void AddReactionTime()
     {
         listReactionTimes.Add(currentReactionTime);
     }
 
+    //Add reaction position to the list
     public void AddReactionPosition(Vector2 tapPos)
     {
         listTapPositions.Add(tapPos);
     }
 
+    //Set the game state
     public void SetGameState(GameState newState)
     {
         currentState = newState;
     }
 
+    //Get the game state
     public GameState GetGameState()
     {
         return currentState;
     }
 
+    //Get the current timer value
     string GetTimer(int s)
     {
         int mins;
@@ -396,6 +410,7 @@ public class DodgingGameController : MonoBehaviour
         return minsStr + ":" + secsStr;
     }
 
+    //Reset the game variables
     void ResetGame()
     {
         currentTime = 0f;
@@ -411,6 +426,7 @@ public class DodgingGameController : MonoBehaviour
         currentSpawnType = 0;
     }
 
+    //Check if there are meteors currently existing
     bool AreMeteorsExisting()
     {
         GameObject[] existingMeteors;
@@ -425,6 +441,7 @@ public class DodgingGameController : MonoBehaviour
         }
     }
 
+    //Randomise the spawn types
     void RandomiseSpawnTypes()
     {
         for (int i = 0; i < spawnType.Length; i++)
@@ -436,6 +453,7 @@ public class DodgingGameController : MonoBehaviour
         }
     }
 
+    //Return to the main menu
     void ReturnToMenu()
     {
         SceneManager.LoadScene("Title Scene");

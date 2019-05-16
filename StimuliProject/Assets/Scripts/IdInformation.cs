@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class IDInformation
 {
+    //Construct the ID with its number
     public IDInformation(int newId)
     {
         id = newId;
@@ -11,8 +12,10 @@ public class IDInformation
 
     public IDInformation() { }
 
+    //ID number
     public int id;
 
+    //Shooting game variables
     public float averageTimeShooting;
     public float bestTimeShooting;
     public float worstTimeShooting;
@@ -20,6 +23,7 @@ public class IDInformation
     public Vector2[] tapPositionsShooting;
     public float timeSpentPlayingShooting;
 
+    //Driving game variables
     public float averageTimeDriving;
     public float bestTimeDriving;
     public float worstTimeDriving;
@@ -27,6 +31,7 @@ public class IDInformation
     public Vector2[] tapPositionsDriving;
     public float timeSpentPlayingDriving;
 
+    //Dodging game variables
     public float averageTimeDodging;
     public float bestTimeDodging;
     public float worstTimeDodging;

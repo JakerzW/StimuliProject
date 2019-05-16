@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
+    //Ship variables defined
     public float movementVelocity;
     Vector3 nextShipPosition;
     bool shipIsMoving;
@@ -43,6 +44,8 @@ public class ShipController : MonoBehaviour
                 nextShipPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 50));
                 shipIsMoving = true;
                 shipHasMoved = true;
+
+                Handheld.Vibrate();
             }
 
             if (shipIsMoving)
@@ -61,6 +64,8 @@ public class ShipController : MonoBehaviour
             nextShipPosition = Vector3.zero;
             shipIsMoving = false;
 
+            ShowWarnings(false, false, false, false);
+
             if (Input.GetMouseButtonDown(0))
             {
                 ResetShip();
@@ -68,11 +73,13 @@ public class ShipController : MonoBehaviour
         }
     }
 
+    //Move the ship to the mouse click position
     void MoveShip(Vector3 mousePosOnClick)
     {
         gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, mousePosOnClick, movementVelocity * Time.deltaTime);
     }
 
+    //CHeck for collision with meteor
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Meteor"))
@@ -81,6 +88,7 @@ public class ShipController : MonoBehaviour
         }
     }
 
+    //Show the warning signs
     public void ShowWarnings(bool up, bool right, bool down, bool left)
     {
         upWarning.SetActive(up);
@@ -89,6 +97,7 @@ public class ShipController : MonoBehaviour
         leftWarning.SetActive(left);
     }
 
+    //Reset the ship values
     void ResetShip()
     {
         gameObject.transform.position = Vector3.zero;

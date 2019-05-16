@@ -6,10 +6,13 @@ using UnityEngine.UI;
 
 public class TitleScreenButtonController : MonoBehaviour
 {
+    //Array of ID information
     public int[] Ids;
 
+    //Data controller GameObject
     public GameObject dataController;
 
+    //UI objects defined
     public Image fadeImage;
     public Dropdown chooseId;
     public Button addId;
@@ -18,32 +21,53 @@ public class TitleScreenButtonController : MonoBehaviour
     public Button dodgeButton;
     public Button idButton;
 
+    //Title screen variables
+    public float buttonPressTimer;
     bool idButtonsShowing;
 
+    //Init the title screen
     private void Start()
     {
         dataController = GameObject.FindGameObjectWithTag("DataController");
+
+        buttonPressTimer = 3f;
+        shootButton.interactable = false;
+        driveButton.interactable = false;
+        dodgeButton.interactable = false;
 
         idButtonsShowing = false;
         LoadDropdownValues();
     }
 
+    //Update the title screen
     private void Update()
     {
+        buttonPressTimer -= Time.deltaTime;
+
+        if (buttonPressTimer <= 0)
+        {
+            shootButton.interactable = true;
+            driveButton.interactable = true;
+            dodgeButton.interactable = true;
+        }
+
         UpdateIdButtons();
     }
 
+    //Load a new scene
     public void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }	
 
+    //Add a new ID
     public void AddNewId()
     {
         dataController.GetComponent<DataController>().AddNewId();
         idButtonsShowing = false;
     }
 
+    //Show the ID buttons
     public void ShowIDButtons()
     {
         LoadDropdownValues();
@@ -58,6 +82,7 @@ public class TitleScreenButtonController : MonoBehaviour
         }
     }
 
+    //Update the ID buttons
     void UpdateIdButtons()
     {
         idButton.GetComponentInChildren<Text>().text = "ID: " + dataController.GetComponent<DataController>().GetCurrentId();
@@ -67,6 +92,7 @@ public class TitleScreenButtonController : MonoBehaviour
         addId.gameObject.SetActive(idButtonsShowing);
     }
     
+    //Load the dropdown values
     void LoadDropdownValues()
     {
         chooseId.ClearOptions();
@@ -74,6 +100,7 @@ public class TitleScreenButtonController : MonoBehaviour
         chooseId.captionText.text = "ID: " + dataController.GetComponent<DataController>().GetCurrentId();
     }
 
+    //Choose the current ID
     public void ChooseCurrentID()
     {
         dataController.GetComponent<DataController>().SetCurrentId(chooseId.value);

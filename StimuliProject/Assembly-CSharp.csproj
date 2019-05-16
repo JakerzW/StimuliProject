@@ -70,7 +70,6 @@
     <Compile Include="Assets\Scripts\Driving Game\DrivingGameController.cs" />
     <Compile Include="Assets\Scripts\Driving Game\TileID.cs" />
     <Compile Include="Assets\Scripts\Driving Game\TrackController.cs" />
-    <Compile Include="Assets\Scripts\Helper.cs" />
     <Compile Include="Assets\Scripts\IdInformation.cs" />
     <Compile Include="Assets\Scripts\Shooting Game\ShootingGameController.cs" />
     <Compile Include="Assets\Scripts\Shooting Game\ShootingPlayerController.cs" />
@@ -83,6 +82,7 @@
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_characters.xml" />
     <None Include="Assets\Kenney\Game icons (100 assets)\Spritesheet\sheet_white2x.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_objects.xml" />
+    <None Include="Assets\Instructions.txt" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_vehicles.xml" />
     <None Include="Assets\Kenney\Space shooter assets (300 assets)\Spritesheet\sheet.xml" />
     <None Include="Assets\Kenney\Racing pack (420 assets)\Spritesheets\spritesheet_tiles.xml" />

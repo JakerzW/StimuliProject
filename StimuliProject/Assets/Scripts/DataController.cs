@@ -5,13 +5,17 @@ using System.IO;
 
 public class DataController : MonoBehaviour
 { 
+    //List of all the IDs
     List<IDInformation> allIds = new List<IDInformation>();
 
+    //Data variables
     int numOfIds;
     public int currentId;
 
+    //Current gameID enum
     public enum GameID { shoot, drive, dodge };
 
+    //Call this function first
     private void Awake()
     {
         GameObject[] objs = GameObject.FindGameObjectsWithTag("DataController");
@@ -30,23 +34,13 @@ public class DataController : MonoBehaviour
         Load();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //Return all the IDs
     public List<IDInformation> GetAllIds()
     {
         return allIds;
     }
 
+    //Get all the ID strings
     public List<string> GetAllIdStrings()
     {
         List<string> allIdStr = new List<string>();
@@ -57,21 +51,25 @@ public class DataController : MonoBehaviour
         return allIdStr;
     }
 
+    //Get the current ID
     public int GetCurrentId()
     {
         return currentId;
     }
 
+    //Set the current ID
     public void SetCurrentId(int newId)
     {
         currentId = newId;
     }
 
+    //Add an ID to the list
     void AddId()
     {
         allIds.Add(new IDInformation());
     }
 
+    //Add a new ID
     public void AddNewId()
     {
         if (PlayerPrefs.GetInt("NumOfIds") == 0)
@@ -93,6 +91,7 @@ public class DataController : MonoBehaviour
         }
     }
 
+    //Update the ID with the info given
     public void UpdateIdInfo(GameID game, float av, float best, float worst, float[] times, Vector2[] positions, float playTime)
     {
         switch (game)
@@ -134,6 +133,7 @@ public class DataController : MonoBehaviour
         Save();
     }
 
+    //Load the ID info from the associated json file
     public void Load()
     {
         for (int i = 0; i < allIds.Count; i++)
@@ -141,32 +141,18 @@ public class DataController : MonoBehaviour
             string filePath = Path.Combine(Application.persistentDataPath, "ID_" + i + ".json");
             string json = File.ReadAllText(filePath);
             allIds[i] = JsonUtility.FromJson<IDInformation>(json);
-
-
-
-            //if (PlayerPrefs.HasKey("ID_" + i))
-            //{
-            //    allIds[i] = Helper.Deserialise<IDInformation>(PlayerPrefs.GetString("ID_" + i));
-            //    Debug.Log(allIds[i]);
-            //}
-            //else
-            //{
-            //    Save();
-            //}
-
         }        
     }
-
+    //Save the ID info into the associated json file
     public void Save()
     {
         string filePath = Path.Combine(Application.persistentDataPath, "ID_" + allIds[currentId].id + ".json");
         string json = JsonUtility.ToJson(allIds[currentId]);
         File.WriteAllText(filePath, json);
         Debug.Log("Saving to json file.");
-
-        //PlayerPrefs.SetString("ID_" + allIds[currentId].id, Helper.Serialise<IDInformation>(allIds[currentId]));
     }
 
+    //Clear all the data
     public void ClearAllData()
     {
         Directory.Delete(Application.dataPath + "/ID Data/");

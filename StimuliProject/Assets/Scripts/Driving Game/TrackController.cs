@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TrackController : MonoBehaviour
 {    
+    //GameObjects defined
     public GameObject Background;
     public GameObject TrackStartBlock;
     public GameObject TrackStraight;
@@ -64,6 +65,7 @@ public class TrackController : MonoBehaviour
         }
 	}
 
+    //Init the track
     public void InitTrack()
     {
         cBG = Instantiate(Background, gameObject.transform);
@@ -88,16 +90,19 @@ public class TrackController : MonoBehaviour
         nTrack.transform.position = new Vector3(0f, 122.4f, 1f);
     }
 
+    //Space the tracks
     void SpaceTracks(GameObject curTrack, GameObject prevTrack)
     {
         curTrack.transform.localPosition = new Vector3(curTrack.transform.localPosition.x, prevTrack.transform.localPosition.y + roadSpacing, curTrack.transform.localPosition.z);
     }
 
+    //Space the background
     void SpaceBG(GameObject curBG, GameObject prevBG)
     {
         curBG.transform.localPosition = new Vector3(prevBG.transform.localPosition.x, prevBG.transform.localPosition.y + bgSpacing, prevBG.transform.localPosition.z);
     }
 
+    //Update the tracks
     void UpdateTracks()
     {
         //Move the tracks
@@ -241,16 +246,19 @@ public class TrackController : MonoBehaviour
         }
     }    
 
+    //Set the amount of changes since the last segment
     public void SetChangesSinceLastSeg(int newCount)
     {
         changesSinceLastSeg = newCount;
     }
 
+    //Return the changes since the last segment
     public int GetChangesSinceLastSeg()
     {
         return changesSinceLastSeg;
     }
 
+    //Change the direction
     public void ChangeDirection(string type)
     {
         //Spawn the road given in the position given and queue in nTrack
@@ -288,6 +296,8 @@ public class TrackController : MonoBehaviour
         }
         currentSegment++;
     }
+
+    //Randomise the segment lengths
     void RandomiseSegmentLengths()
     {
         for (int i = 0; i < segmentLengths.Length; i++)
@@ -299,6 +309,7 @@ public class TrackController : MonoBehaviour
         }
     }
 
+    //Get the next track 
     public GameObject GetNextTrack()
     {
         return cTrack3;

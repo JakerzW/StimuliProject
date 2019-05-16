@@ -1,0 +1,25 @@
+Reactify - A stimuli based reaction game
+
+The point of this application is to test and record the users reaction times while playing a simple
+touch based game. These three games consist of three different types of gameplay typically used
+in the common action game. These are:
+- Shooting
+- Driving
+- Dodging
+After the games have been played, all the data required to evaluate the players' reactions are stored in
+a file that is identified using a unique identifier, and then compared to the other users. 
+
+Shooting
+In the shooting game, the player is required to tap on the targets shown on screen as soon as they 
+appear. They should then repeat this process until the game is complete.
+
+Driving
+In the driving game, the player must tap on either side of the screen as soon as a direction is given.
+When the 'Split' direction is shown, the player can choose to move in either direction, and will 'Join' 
+the track after this section has finished. If they fail to tap quick enough or the timer runs out, the 
+game will end.
+
+Dodging
+In the dodging game, up to 3 asteroids will move towards the player, and the directions of these asteroids
+will be shown on screen. The player must then tap on the screen to move the ship to that position in order
+to dodge the asteroids. The game will end if the timer ends or the player is hit by an asteroid.
